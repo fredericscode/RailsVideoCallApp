@@ -1,0 +1,13 @@
+<div class="container">
+
+  <%= render 'pages/home/jumbotron' %>
+
+  <div class="row">
+    <% @users.each do |user| %>
+      <div class="col-md-3 col-sm-6">
+        <%= render 'pages/home/user-card', user: user %>
+      </div>
+    <% end %>
+  </div>
+
+</div>

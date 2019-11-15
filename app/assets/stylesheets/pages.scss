@@ -1,0 +1,322 @@
+// Place all the styles related to the Pages controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+@import "./variables";
+
+// ========= Bootstrap notification ==========
+.notice, .danger {
+  margin: 0px;
+  p {
+    margin-bottom: 0px;
+  }
+}// ========= Bootstrap notification ==========
+
+
+
+////////// ================== AUTH FORM ============//////////////
+.form-block {
+  @include box-shadow;
+  margin-top: 60px;
+  padding: 25px;
+  border-radius: 10px;
+  background-color: white;
+  h1 {
+    text-align: center;
+    font-weight: 700;
+  }
+  .form-body {
+    label, em {
+      color: #8A8D91;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+    input {
+      box-shadow: none;
+      background-color: #E8EBED;
+      &:focus {
+        background-color: white;
+        border: 2px solid #E8EBED;
+      }
+    }
+    input.btn {
+      @include btn;
+    }
+    br {
+      //display: none;
+    }
+    a {
+      color: #8A8D91;
+      font-size: 14px;
+    }
+    .alert-error {
+      background-color: red;
+      color: white;
+      .close {
+        color: white;
+        margin-left: 3px;
+      }
+    }
+
+  }
+}//========================== Auth form =====================
+
+
+
+
+
+
+//======================= NAVIGATION==================================
+.navbar {
+  background-color: white !important;
+  box-shadow: 0 5px 5px -5px #C8CBCC;
+  .fa-asymmetrik {
+    font-size: 40px;
+  }
+  i {
+    font-size: 18px;
+    margin-right: 5px;
+    color: #6321E3;
+  }
+  .navbar-brand {
+    color: black !important;
+    font-weight: 500;
+    font-size: 24px;
+    margin-top: 15px;
+    margin-right: 0px;
+  }
+
+  .navbar-nav {
+    margin-left: 40px;
+  }
+
+  ul {
+    margin-bottom: 0px;
+    padding-left: 0px;
+    li {
+      float: right;
+      text-decoration: none;
+      display: inline-block;
+      a {
+        color: #981CEB;
+      }
+      img {
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+      }
+      .dropdown-toggle::before {
+        display: none;
+      }
+      .dropdown-menu {
+        padding: 0;
+        .dropdown-item {
+          text-transform: uppercase;
+          font-size: 14px;
+          font-weight: 500;
+          color: black;
+          &:hover {
+            background-color: #6321E3 !important;
+            color: white !important;
+            i {
+              color: white;
+            }
+          }
+          i {
+            margin-right: 20px;
+          }
+        }
+      }
+    }
+    .nav-item.auth {
+      margin-top: 3px;
+      margin-right: 5px;
+      .sign-in {
+        color: #6321E3;
+        font-weight: 700;
+      }
+      .sign-up {
+        background-color: #7B16FF;
+        color: white;
+        border-color: #7B16FF;
+        border-radius: 25px;
+        font-weight: 700;
+      }
+    }
+  }
+}//======================= Navigation==================================
+
+
+// =================================JUMBOTRON====================================
+.jumbotron {
+    @include box-shadow;
+    margin-bottom: 0px !important;
+    padding: 30px;
+    margin-top: 40px;
+    background-color: #738CE6;
+    h3 {
+      letter-spacing: 1px;
+      margin-bottom: 15px;
+      font-weight: 500;
+      font-size: 32px;
+      color: white;
+    }
+    p {
+      font-size: 13px;
+      font-weight: 100;
+      line-height: 21px;
+      letter-spacing: 2px;
+      color: white;
+    }
+
+    a {
+      @include btn;
+      text-decoration: none;
+      margin-top: 20px !important;
+    }
+}// ================================JUMBOTRON===============================
+
+
+//===================== Modal =============================
+.modal {
+  .modal-header {
+    //background-color: white;
+    .fas {
+      margin: 4px 0px 0px 10px;
+      color: green;
+    }
+    .fas.fa-video-slash {
+      color: red;
+    }
+
+    .modal-title {
+      color: white;
+    }
+
+  }
+  .modal-body {
+    .fas {
+      font-size: 18px;
+      margin-left: 10px;
+      color: green;
+    }
+    #session_id, #sender_id {
+      display: none;
+    }
+  }
+  .modal-footer {
+    //background-color: #121212;
+    //color: white;
+  }
+
+}
+
+#modal-body-session {
+  padding: 0px;
+  height: 400px;
+  .session {
+    background-color: black;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    #subscriber {
+      position: relative;
+      top: 0px;
+      left: 0px;
+      width: 100%;
+      height: 100%;
+    }
+    #publisher {
+      position: absolute;
+      width: 30%;
+      height: 30%;
+      bottom: 0px;
+      right: 0px;
+      z-index: 1000;
+
+    }
+  }
+
+}//==================== Modal ============================
+
+
+//====================== USER CARD ===============================
+.user-card {
+  @include box-shadow;
+  margin: 25px 20px;
+  padding-bottom: 15px;
+  border-radius: 15px;
+  width: 200px;
+
+  .user-avatar {
+    padding: 20px 0px 10px 0px;
+    margin: auto;
+    width: 50%;
+    img {
+      height: 96px;
+      width: 96px;
+      border-radius: 50%;
+    }
+  }
+  .user-info {
+    margin: auto;
+    width: 100%;
+    .user-name {
+      text-align: center;
+      font-size: 16px;
+      font-weight: 500;
+      .appearance {
+        margin-left: 3px;
+        &.offline {
+          display: none;
+        }
+        .fas {
+          color: #2AD99F;
+          font-size: 10px;
+        }
+      }
+    }
+    .user-state {
+      h6 {
+        text-align: center;
+        font-size: 14px;
+        color: #738CE6;
+      }
+    }
+
+  }
+  .user-links {
+    margin: auto;
+    width: 60%;
+    .icons {
+      text-align: center;
+      a.github-icon {
+        text-decoration: none;
+        color: black;
+        margin: 0px 20px;
+        i {
+          font-size: 20px;
+        }
+      }
+      a.call-icon {
+        display: none;
+        text-decoration: none;
+        color: #6321E3;
+        margin: 0px 20px;
+        &.offline {
+        display: none;
+        }
+        &.online {
+          display: inline-block;
+        }
+        .fa-video {
+          font-size: 20px;
+        }
+      }
+
+   }
+
+ }
+}//====================== USER CARD ===============================

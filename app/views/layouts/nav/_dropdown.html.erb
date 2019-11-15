@@ -1,0 +1,15 @@
+<li class="profile-image dropleft">
+  <a class="dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="false" aria-expanded="true" >
+    
+  <img src="http://i.pravatar.cc/50" alt="profile image">
+
+  </a>
+  <div class="dropdown-menu" aria-labelledby="profileDropdown">
+    <%= link_to root_path, class: "dropdown-item" do %>
+      <i class="fas fa-user"></i><%= current_user.name %>
+    <% end %>
+    <%= link_to logout_path, class: "dropdown-item", method: :delete do %>
+      <i class="fas fa-wrench"></i>Logout
+    <% end %>
+  </div>
+</li>
