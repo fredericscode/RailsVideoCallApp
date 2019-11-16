@@ -270,12 +270,20 @@
       .appearance {
         margin-left: 3px;
         &.busy {
-          display: none;
+          //display: none;
+          .fas {
+            color: red;
+            font-size: 10px;
+          }
+          
         }
-        .fas {
-          color: #2AD99F;
-          font-size: 10px;
+        &.available {
+          .fas {
+             color: #2AD99F;
+             font-size: 10px;
+          }
         }
+        
       }
     }
     .user-state {
@@ -301,14 +309,14 @@
         }
       }
       a.call-icon {
-        display: none;
+        float: right;
         text-decoration: none;
         color: #6321E3;
         margin: 0px 20px;
-        &.offline {
+        &.busy {
         display: none;
         }
-        &.online {
+        &.available {
           display: inline-block;
         }
         .fa-video {

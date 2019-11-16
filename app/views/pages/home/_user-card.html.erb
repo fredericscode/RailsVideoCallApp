@@ -18,10 +18,12 @@
       <%= link_to user.github_link, class:'github-icon', title: "Github page", data: {toggle: "tooltip"} do %>
         <i class="fab fa-github-square"></i>
       <% end %>
-
-      <%= link_to '', class:"call-icon", id:"call-icon#{user.id}", title: "Start a video call with #{user.name}", data: {id: user.id, name: user.name, toggle: "tooltip"}, remote: true  do %>
+      
+      
+      <%= link_to '', class:"call-icon #{user.state}", id:"call-icon#{user.id}", title: "Start a video call with #{user.name}", data: {id: user.id, name: user.name, toggle: "tooltip"}, remote: true  do %>
         <i class="fas fa-video"></i>
       <% end %>
+      
     </div>
   </div>
 </div>
