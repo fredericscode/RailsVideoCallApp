@@ -7,10 +7,10 @@
   <div class="user-info">
     <div class="user-name">
       <%= user.name %>
-      <span class="appearance" id="appearance<%= user.id %>"><i class="fas fa-circle"></i></span>
+      <span class="appearance <%= user.state %>" id="appearance<%= user.id %>"><i class="fas fa-circle"></i></span>
     </div>
-    <div class="user-level">
-      <h6 id="user-state<%= user.id %>"><%= user.level %></h6>
+    <div class="user-state">
+      <h6 id="user-state<%= user.id %>"><%= user.state %></h6>
     </div>
   </div>
   <div class="user-links">
