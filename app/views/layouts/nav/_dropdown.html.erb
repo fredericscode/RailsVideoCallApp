@@ -1,7 +1,11 @@
 <li class="profile-image dropleft">
   <a class="dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="false" aria-expanded="true" >
-    
-  <img src="http://i.pravatar.cc/50" alt="profile image">
+  <% if current_user.avatar.attached? %>
+      <%= image_tag current_user.avatar, id:"user-avatar" %>
+    <% else %>
+      <img id="user-avatar" src="http://i.pravatar.cc/60" alt="profile image">
+  <% end %>
+  
 
   </a>
   <div class="dropdown-menu" aria-labelledby="profileDropdown">

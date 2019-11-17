@@ -5,4 +5,5 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
          
   enum state: { available: 0, busy: 1 }   
+  has_one_attached :avatar
 end
