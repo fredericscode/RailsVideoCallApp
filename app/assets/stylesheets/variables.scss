@@ -1,13 +1,13 @@
-$mainColor: #6321E3;
+$mainColor: #1CB954;
 $blackColor: #000000;
 $grayColor:  #D4D9DD;
 $whiteColor: #ffffff;
 
 
 @mixin btn {
-  background-color: #7B16FF;
+  background-color: $mainColor;
   color: #ffffff;
-  border-color: #7B16FF;
+  border-color: $mainColor;
   border-radius: 25px;
   font-weight: 700;
 }
