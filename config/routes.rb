@@ -7,4 +7,6 @@ Rails.application.routes.draw do
     get 'signup', to: 'devise/registrations#new'
     delete 'logout', to: 'devise/sessions#destroy'
   end
+  
+  get 'state', to: 'pages#state'
 end

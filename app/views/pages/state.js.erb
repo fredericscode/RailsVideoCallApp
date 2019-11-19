@@ -1,0 +1,11 @@
+console.log("Got to the state.js.erb file");
+
+var btnState = document.getElementById("btn-state");
+console.log(btnState);
+
+var text = btnState.innerHTML
+if( text === "Available") {
+    btnState.innerHTML = "Busy";
+} else {
+    btnState.innerHTML = "Available"
+}
