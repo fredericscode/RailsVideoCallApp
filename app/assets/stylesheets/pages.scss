@@ -4,6 +4,11 @@
 
 @import "./variables";
 
+body {
+    font-family: 'Rubik', sans-serif !important;
+    background-color: #190351 !important;
+}
+
 // ========= Bootstrap notification ==========
 .notice, .danger {
   margin: 0px;
@@ -15,9 +20,41 @@
 
 
 ////////// ================== AUTH FORM ============//////////////
+
+.header {
+  .h1 {
+    color: white;
+    margin-top: 80px;
+    
+    span {
+       font-weight: 700;
+    }
+  }
+
+  p {
+    color: white;
+    font-size: 18px;
+    margin-top: 30px !important;
+  }
+}
+
+.auth-icons {
+    font-size: 100px;
+    color: #8982A7;
+    .fa-file-code {
+        color: #B76646;
+    }
+    .fa-laptop-code {
+        color: #FED35F;
+    }
+    .fa-video {
+        
+    }
+}
+
+
 .form-block {
-  @include box-shadow;
-  margin-top: 60px;
+  margin-top: 80px;
   padding: 25px;
   border-radius: 10px;
   background-color: white;
@@ -42,9 +79,7 @@
     input.btn {
       @include btn;
     }
-    br {
-      //display: none;
-    }
+    
     a {
       color: #8A8D91;
       font-size: 14px;
@@ -68,18 +103,17 @@
 
 //======================= NAVIGATION==================================
 .navbar {
-  background-color: white !important;
-  box-shadow: 0 5px 5px -5px #C8CBCC;
+  background-color: #190351 !important;
   .fa-asymmetrik {
     font-size: 40px;
   }
   i {
     font-size: 18px;
     margin-right: 5px;
-    color: $mainColor;
+    color: #43A4BD;
   }
   .navbar-brand {
-    color: black !important;
+    color: white !important;
     font-weight: 500;
     font-size: 24px;
     margin-top: 15px;
@@ -150,10 +184,10 @@
 // =================================JUMBOTRON====================================
 .jumbotron {
     @include box-shadow;
-    margin-bottom: 0px !important;
+    margin-bottom: 30px !important;
     padding: 30px;
-    margin-top: 40px;
-    background-color: #1F0C2E !important;
+    margin-top: 20px;
+    background-color: #43A4BD !important;
     h3 {
       letter-spacing: 1px;
       margin-bottom: 15px;
@@ -245,7 +279,7 @@
 
 //====================== USER CARD ===============================
 .user-card {
-  @include box-shadow;
+  background-color: white;
   margin: 25px 20px;
   padding-bottom: 15px;
   border-radius: 15px;

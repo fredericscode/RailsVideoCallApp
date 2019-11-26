@@ -12,7 +12,7 @@ amazon:
   access_key_id: <%= ENV["ACCESS_KEY_ID"] %>
   secret_access_key: <%= ENV["SECRET_ACCESS_KEY"] %>
   region: "us-east-2"
-  bucket: "heroku925"
+  bucket: "fredericscode"
 
 # Remember not to checkin your GCS keyfile to a repository
 # google:

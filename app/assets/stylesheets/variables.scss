@@ -5,11 +5,11 @@ $whiteColor: #ffffff;
 
 
 @mixin btn {
-  background-color: $mainColor;
-  color: #ffffff;
-  border-color: $mainColor;
-  border-radius: 25px;
-  font-weight: 700;
+  background-color: #45A1BD;
+  color: white;
+  border-color: #45A1BD;
+  border-radius: 10px;
+  font-weight: 500;
 }
 
 @mixin box-shadow {
