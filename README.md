@@ -35,7 +35,6 @@ rails g controller home index
 This creates a controller, an index action and a views/home/index.html.erb template to display our home page.
 
 #home_controller.rb 
-
 ```ruby
 class HomeController < ApplicationController
   def index
