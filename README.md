@@ -37,8 +37,7 @@ This creates a controller, an index action and a views/home/index.html.erb templ
 #home_controller.rb 
 ```ruby
 class HomeController < ApplicationController
-  def index
-      
+  def index  
   end 
 end
 ```
