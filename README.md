@@ -7,7 +7,7 @@ rails new VideoCall --database=postgresql
 
 The command above will create the application, install all the default gems, and initialize webpacker for us. What the --database flag does is simply letting rails know that we want to use postgresql as our database for this project. Rails uses the sqlite3 database by default. After, in the terminal, using the cd command, get into your project folder. 
 
-First, let's add bootstrap to our project. Go to the #views/layouts/application.html.erb file and add the bootstrap cdn link in the head tag:
+First, let's add bootstrap to our project. Go to the 'views/layouts/application.html.erb' file and add the bootstrap cdn link in the head tag:
 
 ```html
 <!DOCTYPE html>
@@ -32,7 +32,7 @@ The next thing we're going to do is to create a Controller, an action and a temp
 ```terminal
 rails g controller home index
 ```
-This creates a controller, an index action and a views/home/index.html.erb template to display our home page.
+This creates a controller, an index action and a app/views/home/index.html.erb template to display our home page.
 
 #home_controller.rb 
 ```ruby
@@ -41,6 +41,15 @@ class HomeController < ApplicationController
   end 
 end
 ```
+Now, we need to modify our route file to handle requests to the root of our application. Go to the 'config/routes.rb' file and the following code:
+
+#routes.rb
+```ruby
+Rails.application.routes.draw do
+  root to: 'home#index'
+end
+```
+This piece of code means that every time a user makes a request to the root of our app ('/'), the request is going to be handled by the index action of our home controller.
 
 
 
