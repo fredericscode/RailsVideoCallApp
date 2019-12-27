@@ -72,6 +72,51 @@ rails g devise User
 Then run ```rails db:migrate```
 
 This will not only create our model, but it will also configures your ```config/routes.rb``` file to point to the Devise controller.
-When you go to ```/users/sign```
+You can now get your auth pages on ```/users/sign_in``` and ```/users/sign_up```.
+Let's change those links into ```/login``` and ```/register```. (You don't have to do this. This is just a personal preference). Go to your ```config/routes.rb``` and add the following code.
+```ruby
+devise_scope :user do
+   get 'login', to: 'devise/sessions#new'
+   get 'register', to: 'devise/registrations#new'
+   delete 'logout', to: 'devise/sessions#destroy'
+end
+```
+Now you can go to ```/login``` and ```/register``` for your login and register pages respectively. But that's not it:
+Because we have not changed the default links, we just added new ones. To get rid of the ```/users/sign_in``` and ```/users/sign_up``` links, we need to go to ```app/views/devise/shared/_links.html.erb``` and make the following changes:
+change this
+```html
+<%- if controller_name != 'sessions' %>
+  <%= link_to "Log in", new_session_path(resource_name) %><br />
+<% end %>
+
+<%- if devise_mapping.registerable? && controller_name != 'registrations' %>
+  <%= link_to "Sign up", new_registration_path(resource_name) %><br />
+<% end %>
+```
+to this
+```html
+<%- if controller_name != 'sessions' %>
+  <%= link_to "Log in", login_path %><br />
+<% end %>
+
+<%- if devise_mapping.registerable? && controller_name != 'registrations' %>
+  <%= link_to "Sign up", register_path %><br />
+<% end %>
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
