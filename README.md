@@ -7,6 +7,8 @@ rails new VideoCall --database=postgresql
 
 The command above will create the application, install all the default gems, and initialize webpacker for us. What the --database flag does is simply letting rails know that we want to use postgresql as our database for this project. Rails uses the sqlite3 database by default. After, in the terminal, using the cd command, get into your project folder. 
 
+### I- Installing Bootstrap 4
+
 First, let's add bootstrap to our project. Go to the ```views/layouts/application.html.erb``` file and add the bootstrap cdn link in the head tag:
 
 ```html
@@ -51,7 +53,7 @@ end
 ```
 This piece of code means that every time a user makes a request to the root of our app ('/'), the request is going to be handled by the index action of our home controller.
 
-## User authentication with Devise
+### II- User authentication with Devise
 
 Before we start building our home page, let's add user authentication to our app. To do that, we are gonna use the devise gem. 
 First, add the devise to your gemfile.
