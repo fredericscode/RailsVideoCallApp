@@ -82,8 +82,7 @@ devise_scope :user do
 end
 ```
 Now you can go to ```/login``` and ```/register``` for your login and register pages respectively. But that's not it:
-Because we have not changed the default links, we just added new ones. To get rid of the ```/users/sign_in``` and ```/users/sign_up``` links, we need to go to ```app/views/devise/shared/_links.html.erb``` and make the following changes:
-change this
+Because we have not changed the default links, we just added new ones. To get rid of the ```/users/sign_in``` and ```/users/sign_up``` links, we need to go to ```app/views/devise/shared/_links.html.erb``` and chage this
 ```html
 <%- if controller_name != 'sessions' %>
   <%= link_to "Log in", new_session_path(resource_name) %><br />
@@ -103,6 +102,18 @@ to this
   <%= link_to "Sign up", register_path %><br />
 <% end %>
 ```
+Now let's add some attributes to our user model. 
+```terminal
+rails g migration addDetailsToUsers name:string avatar:string level:string github_link:string state:integer
+```
+Go to the newly create migration file and make some changes for the state field
+```ruby
+t.integer :state,             null: false, default: 0
+```
+and run ```rails db:migrate```
+This is going to add those fields to the users table.
+We can finally start building the front-end of our app. We are going to start with the home page. 
+
 
 
 
