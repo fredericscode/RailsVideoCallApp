@@ -51,5 +51,25 @@ end
 ```
 This piece of code means that every time a user makes a request to the root of our app ('/'), the request is going to be handled by the index action of our home controller.
 
+## User authentication with Devise
+
+Before we start building our home page, let's add user authentication to our app. To do that, we are gonna use the devise gem. 
+First, add the devise to your gemfile.
+```ruby
+gem 'devise'
+```
+Then run bundle install.
+Next, run the generator:
+```terminal
+rails generate devise:install
+```
+Now it's time to create our user model.
+```terminal
+rails g devise User
+```
+Then run ```rails db:migrate```
+
+This will not only create our model, but it will also configures your config/routes.rb file to point to the Devise controller.
+When you go to '/users/sign'
 
 
