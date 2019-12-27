@@ -181,7 +181,7 @@ Then create the ```home/partials/nav/auth_links.html.erb``` for when the user is
 ```
 Now when you go to ```localhost:3000```, you can see our navbar. But it doesn't look really good, so let's style it.
 Go to ```app/assets/stylesheets/``` and create a ```variables.scss``` file. Add the following code to that file:
-```sass
+```css
 $grayColor:  #8A8D91;
 $lightGray: #E8EBED;
 $greenColor: #3DC794;
@@ -232,6 +232,83 @@ body {
   i {
     font-size: 12px;
   }
+}
+```
+Now our navbar is exactly the way we want it to be.
+
+Next, let's build the header section.
+Go to ```home/partials/_header.html.erb``` and add this:
+```html
+<div class="jumbotron jumbotron-fluid mb-0">
+    <div class="container">
+        <div class="update">
+            <p class="py-1 px-2"><span class="soon mx-2 p-1">SOON</span>TextChat: Instant text messaging coming out soon <i class="fas fa-chevron-right"></i></p>
+        </div>
+        <h1 class="display-4 text-white">The right way to chat with developers, globally</h1>
+        <p class="lead mb-5">Don't let VAT / GST / Sales Tax be the hassle of your billing model. Determine the right rate for every transaction - at item level -, send compliant tax invoices and power your accounting. Do it automatically and around the globe with Octobat.</p>
+        <div class="buttons">
+            <%= render btnStart %>
+            <a class="btn btn-primary disabled" href="#">TextChat coming soon!!!</a>
+        </div>
+    </div>
+</div>
+<div class="text-right">
+    <img class="header-image d-none d-md-block mt-3" src="<%= image_path('Workathome.png') %>" alt="">
+</div>
+```
+
+Now let's style our header section
+```css
+/** =================== JUMBOTRON STYLES ================== **/
+
+.jumbotron {
+  background-image: linear-gradient(to right, #141B5D, #4756A7);
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 0 100%);
+  height: 90vh;
+  h1 {
+    font-size: 48px;
+    line-height: 60px;
+    font-weight: 800;
+    width: 60%;
+  }
+  p {
+    color: #C9CBDD;
+    width: 60%;
+  }
+  .update {
+    margin-bottom: 25px;
+    p {
+      background-color: #2C3780;
+      color: white;
+      border-radius: 20px;
+      font-size: 14px;
+      box-sizing: border-box;
+      span {
+        font-size: 12px;
+        background-color: $greenColor;
+        border-radius: 20px;
+        margin-bottom: 0px;
+      }
+    }
+    
+  }
+  .start-btn {
+    background-color: $greenColor;
+    border-color: $greenColor;
+    &:focus, &:active {
+      box-shadow: none;
+      background-color: $greenColor;
+      border-color: $greenColor;
+    }
+  }
+}
+ 
+.header-image {
+  position: absolute;
+  top: 120px;
+  right: 30px;
+  width: 600px;
+  
 }
 ```
 
