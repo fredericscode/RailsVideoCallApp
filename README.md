@@ -228,6 +228,8 @@ end
 We extended the sign_up_params method by adding our attributes(including the new ones) to ```params.require(:user).permit```.
 We also added the ```account_update_params``` method, although we are not gonna need it.
 
+### Building the Home page
+
 We can finally start building our home page. 
 Go to ```views/home/index.html.erb``` file and add the following code.
 ```html
@@ -617,7 +619,7 @@ Go to ```home/partials/_header.html.erb``` and add this:
     <img class="header-image d-none d-md-block mt-3" src="<%= image_path('Workathome.png') %>" alt="">
 </div>
 ```
-Define the ```btnStart``` method in ```helpers/home_helpers.rb```:
+Define the ```btnStart``` method in ```helpers/home_helper.rb```:
 ```ruby
 def btnStart
     if user_signed_in?
