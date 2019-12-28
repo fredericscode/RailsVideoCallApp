@@ -235,6 +235,13 @@ end
 We extended the sign_up_params method by adding our attributes(including the new ones) to ```params.require(:user).permit```.
 We also added the ```account_update_params``` method, although we are not gonna need it.
 
+Now we need to instruct rails to use our registrations controller, not devise registration controller. We can do that ```config/routes.rb``` by replacing ```devise_for :users``` with ```devise_for :users, controllers: { registrations: "registrations" }```.
+
+Since we are going to be working with images, let's go ahead and initialize active storage by running ```rails active_storage:install``` and then ```rails db:migrate```. Then add this to your ```models/user.rb``` file:
+```ruby
+has_one_attached :avatar
+```
+
 ### Building the Home page
 
 We can finally start building our home page. 
@@ -544,16 +551,6 @@ Let's also style our auth pages, our header and the developers section. Add the 
   }
 }
 
-
-// ========= Bootstrap notification ==========
-.notice, .danger {
-  margin: 0px;
-  p {
-    margin-bottom: 0px;
-  }
-}// ========= Bootstrap notification ==========
-
-
 ////////// ================== AUTH FORM ============//////////////
 
 .auth-page {
@@ -645,6 +642,82 @@ And in the ```home/partials/startbtn/_authbtn.html.erb``` file, add this:
 ```html
 <%= link_to 'Start now', login_path, class: 'start-btn btn btn-success mr-1', id: 'js-start-btn-auth' %>
 ```
+
+### Styling Devise notifications with Bootstrap
+
+Devise alerts are really ugly, let's make them look good. First, go to your ```app/views/layouts/application.html.erb``` file and change the first two lines of the body element with the following code:
+```html
+<!-- Devise notification styled with bootstrap -->
+<% if notice %>
+      <div class="notice alert alert-success alert-dismissible fade show" role="alert">
+        <%= notice %>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+<% elsif alert %>
+      <div class="danger alert alert-danger alert-dismissible fade show" role="alert">
+        <p><%= alert %></p>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+<% end %>    
+```
+Then, go to your ```app/assets/stylesheets/home.scss``` and add this:
+```css
+// ========= Bootstrap notification ==========
+.notice, .danger {
+  margin: 0px;
+  p {
+    margin-bottom: 0px;
+  }
+}// ========= Bootstrap notification ==========
+```
+That's it!!! Now we a you login, register or logout, you have beautiful notifications displayed on top of the navbar.
+
+
+### Image upload on AWS S3
+
+Now is time to allow users to choose a profile picture and upload it to aws using active storage.
+First, go to ```config/environments/development.rb``` and change ```config.active_storage.service = :local``` to ```config.active_storage.service = :amazon```. Then, uncomment the amazon section in your ```config/storage.yml``` and add your AWS S3 credentials. You secure your credentials, you can use rails credentials to store them, but I prefer to store mine inside environment variables. To do that, I'm going create a ```config/local_env.yml``` file. And inside that file, I'm going to store my credentials like this:
+```yml
+AWS_ACCESS_KEY_ID: 'my_access_key_id'
+AWS_SECRET_ACCESS_KEY: 'my_secret_access_key'
+```
+
+After setting env variables, we have to set those env variables into config/application.rb file.
+In the config/application.rb file, add the below code:
+```ruby
+config.before_configuration do
+  env_file = File.join(Rails.root, 'config', 'local_env.yml')
+  YAML.load(File.open(env_file)).each do |key, value|
+    ENV[key.to_s] = value
+  end if File.exists?(env_file)
+end
+```
+Don't forget to add your local_env.yml file in your .gitgnore file.
+
+Next add ```gem "aws-sdk-s3", require: false``` in our gemfile and uncomment the ```image_processing``` gem.
+
+Run ```bundle install```.
+
+Now our users can add a profile picture when signing up and that picture is going to be saved to aws s3.
+
+### How to build the online/offline feature using action cable
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
