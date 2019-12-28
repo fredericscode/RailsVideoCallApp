@@ -210,6 +210,23 @@ Do the same with ```views/devise/sessions/new.html.erb``` by replacing its conte
     </div>
 </div>
 ```
+Now we need to whitelist those new attributes. To do that, we are going to create our own registrations controller. In ```app/controllers```, create ```registrations_controller.rb``` and add this code:
+```ruby
+class RegistrationsController < Devise::RegistrationsController
+
+  private
+
+  def sign_up_params
+    params.require(:user).permit(:name, :email, :avatar, :github_link, :level, :password)
+  end
+
+  def account_update_params
+    params.require(:user).permit(:name, :email, :github_link, :level, :avatar, :password)
+  end
+end
+```
+We extended the sign_up_params method by adding our attributes(including the new ones) to ```params.require(:user).permit```.
+We also added the ```account_update_params``` method, although we are not gonna need it.
 
 We can finally start building our home page. 
 Go to ```views/home/index.html.erb``` file and add the following code.
@@ -334,6 +351,22 @@ Create the ```home/partials/nav/_dropdown.html.erb``` file and add the following
         </div>
 </li>
 ```
+Define the ```change_state_btn``` method in ```helpers/home_helper.rb```.
+```ruby
+def change_state_btn
+   current_user.online? ? "home/partials/nav/dropdown/gofflinebtn" : "home/partials/nav/dropdown/gonlinebtn"
+end
+```
+The ```online``` method above is not defined. To define it, we gonna use enums. Go to ```app/models/user.rb``` and add this code: 
+```ruby
+enum state: { offline: 0, online: 1 }
+```
+This adds ```online``` and ```offline``` methods to our user model. We can now use ```user.online!``` and ```user.offline!``` to change the user's state (0 to 1, or 1 to 0), but we can also use ```user.online?``` and ```user.offline?``` to check if the user is online or offline. 
+
+Next, create ```home/partials/nav/dropdown/_gofflinebtn.html.erb``` and ```home/partials/nav/dropdown/_gonlinebtn.html.erb``` (leave them empty for now) and run the server.
+
+
+
 Then create the ```home/partials/nav/_auth_links.html.erb``` for when the user is not logged in. Add the following code to it:
 ```html
 <li class="nav-item">
@@ -393,35 +426,11 @@ body {
     background-color: $greenColor;
     border-color: $greenColor;
   }
-  i {
-    font-size: 12px;
-  }
 }
 ```
 Now our navbar is exactly the way we want it to be.
 
-Next, let's build the header section.
-Go to ```home/partials/_header.html.erb``` and add this:
-```html
-<div class="jumbotron jumbotron-fluid mb-0">
-    <div class="container">
-        <div class="update">
-            <p class="py-1 px-2"><span class="soon mx-2 p-1">SOON</span>TextChat: Instant text messaging coming out soon <i class="fas fa-chevron-right"></i></p>
-        </div>
-        <h1 class="display-4 text-white">The right way to chat with developers, globally</h1>
-        <p class="lead mb-5">Don't let VAT / GST / Sales Tax be the hassle of your billing model. Determine the right rate for every transaction - at item level -, send compliant tax invoices and power your accounting. Do it automatically and around the globe with Octobat.</p>
-        <div class="buttons">
-            <%= render btnStart %>
-            <a class="btn btn-primary disabled" href="#">TextChat coming soon!!!</a>
-        </div>
-    </div>
-</div>
-<div class="text-right">
-    <img class="header-image d-none d-md-block mt-3" src="<%= image_path('Workathome.png') %>" alt="">
-</div>
-```
-
-Now let's style our header section
+Let's also style our auth pages, our header and the developers section. Add the following code to ```app/assets/stylesheets/home.scss```:
 ```css
 /** =================== JUMBOTRON STYLES ================== **/
 
@@ -474,10 +483,159 @@ Now let's style our header section
   width: 600px;
   
 }
+
+/** =======================DEVELOPERS SECTION ======================== **/
+
+.developers {
+  padding: 20px;
+  h2 {
+    font-weight: 300;
+    color: #212CA6;
+  }
+  .dev-card {
+    background-color: #BCDEFA;
+    border-radius: 20px;
+    img {
+      border: 3px solid #EFF8FF;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+    }
+    .dev-name {
+        padding: 0px 10px;
+        .appearance {
+            color: red;
+            font-size: 8px;
+            &.online {
+                color: green;
+            }
+            
+        }
+    }
+    .dev-level {
+      font-weight: 300;
+      color: #2D8F98;
+    }
+    .dev-icons {
+      i {
+        font-size: 18px;   
+      }
+      .github-icon {
+        color: black;
+      }
+      .camera-icon {
+        color: $greenColor;
+        &.offline {
+            display: none;
+        }
+        
+        
+      }
+    }
+  }
+}
+
+
+// ========= Bootstrap notification ==========
+.notice, .danger {
+  margin: 0px;
+  p {
+    margin-bottom: 0px;
+  }
+}// ========= Bootstrap notification ==========
+
+
+////////// ================== AUTH FORM ============//////////////
+
+.auth-page {
+    background-image: linear-gradient(to right, #141B5D, #4756A7);
+    height: 100vh;
+}
+
+.form-block {
+  margin-top: 80px;
+  padding: 25px;
+  border-radius: 10px;
+  background-color: white;
+  h1 {
+    text-align: center;
+    font-weight: 700;
+  }
+  .form-body {
+    label, em {
+      color: $grayColor;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+    input {
+      box-shadow: none;
+      background-color: $lightGray;
+      &:focus {
+        background-color: white;
+        border: 2px solid $lightGray;
+      }
+    }
+    input.btn {
+      @include btn;
+    }
+    
+    a {
+      color: $grayColor;
+      font-size: 14px;
+    }
+    .alert-error {
+      background-color: red;
+      color: white;
+      .close {
+        color: white;
+        margin-left: 3px;
+      }
+    }
+
+  }
+}//========================== Auth form =====================
+
 ```
 
-
-
+Next, let's build the header section.
+Go to ```home/partials/_header.html.erb``` and add this:
+```html
+<div class="jumbotron jumbotron-fluid mb-0">
+    <div class="container">
+        <div class="update">
+            <p class="py-1 px-2"><span class="soon mx-2 p-1">SOON</span>TextChat: Instant text messaging coming out soon <i class="fas fa-chevron-right"></i></p>
+        </div>
+        <h1 class="display-4 text-white">The right way to chat with developers, globally</h1>
+        <p class="lead mb-5">Don't let VAT / GST / Sales Tax be the hassle of your billing model. Determine the right rate for every transaction - at item level -, send compliant tax invoices and power your accounting. Do it automatically and around the globe with Octobat.</p>
+        <div class="buttons">
+            <%= render btnStart %>
+            <a class="btn btn-primary disabled" href="#">TextChat coming soon!!!</a>
+        </div>
+    </div>
+</div>
+<div class="text-right">
+    <img class="header-image d-none d-md-block mt-3" src="<%= image_path('Workathome.png') %>" alt="">
+</div>
+```
+Define the ```btnStart``` method in ```helpers/home_helpers.rb```:
+```ruby
+def btnStart
+    if user_signed_in?
+        "home/partials/startbtn/scrollbtn"
+    else
+        "home/partials/startbtn/authbtn"
+    end
+end
+```
+Create the ```home/partials/startbtn/_scrollbtn.html.erb``` and ```home/partials/startbtn/_authbtn.html.erb``` files.
+In the ```home/partials/startbtn/_scrollbtn.html.erb``` file, add this: 
+```html
+<%= link_to 'Start now', '#', class: 'start-btn btn btn-success mr-1', id: 'js-start-btn' %>
+```
+And in the ```home/partials/startbtn/_authbtn.html.erb``` file, add this:
+```html
+<%= link_to 'Start now', login_path, class: 'start-btn btn btn-success mr-1', id: 'js-start-btn-auth' %>
+```
 
 
 
