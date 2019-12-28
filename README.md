@@ -6,6 +6,7 @@ rails new VideoCall --database=postgresql
 ```
 
 The command above will create the application, install all the default gems, and initialize webpacker for us. What the --database flag does is simply letting rails know that we want to use postgresql as our database for this project. Rails uses the sqlite3 database by default. After, in the terminal, using the cd command, get into your project folder by running ```cd VideoCall```. 
+Next create a database by running ```rails db:create```.
 
 
 ### I- Installing Bootstrap 4, adding Font Awesome and Google Fonts
@@ -64,7 +65,7 @@ gem 'devise'
 Then run ```bundle install```.
 Next, run the generator:
 ```terminal
-rails generate devise:install
+rails generate devise:install (Follow instructions)
 ```
 Now it's time to create our user model.
 ```terminal
@@ -109,12 +110,108 @@ rails g migration addDetailsToUsers name:string avatar:string level:string githu
 ```
 Go to the newly created migration file and make some changes to the state field
 ```ruby
-t.integer :state,             null: false, default: 0
+add_column :users, :state, :integer, default: 0
 ```
 and run ```rails db:migrate```.
 This is going to add those fields to the users table.
 
-We can finally start building the front-end of our app. We are going to start with the home page. 
+Now let's build our login and register pages. Go to ```views/devise/registrations/new.html.erb``` and replace the content of that file by the following code:
+```html
+<div class="auth-page">
+    <div class="container">
+    <div class="row">
+      <div class="col-sm-6 mx-auto">
+        <div class="form-block">
+          <h1>Sign up to get started</h1>
+          <div class="form-body">
+            <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+              <%= devise_error_messages! %>
+    
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <%= f.label :name %><br />
+                  <%= f.text_field :name, class: "form-control", autocomplete: "name" %>
+                </div> 
+                <div class="form-group col-md-6">
+                  <%= f.label :email %><br />
+                  <%= f.email_field :email, class: "form-control", autocomplete: "email" %>
+                </div>
+                <div class="form-group col-md-6">
+                  <%= f.label :github_link %><br />
+                  <%= f.text_field :github_link, class: "form-control" %>
+                </div>
+                <div class="form-group col-md-6">
+                  <%= f.label :avatar %><br />
+                  <%= f.file_field :avatar, class: "form-control" %>
+                </div>
+                <div class="form-group col-md-6">
+                  <%= f.label :level %><br />
+                  <%= f.select :level, [['Junior', 'junior'], ['Senior', 'senior']], class: "form-control" %>
+                </div>
+                <div class="form-group col-md-6">
+                  <%= f.label :password %>
+                  <%= f.password_field :password, class: "form-control", autocomplete: "new-password" %>
+                </div>
+              </div>
+    
+              <div class="actions form-group">
+                <%= f.submit "Sign up", class: "btn" %>
+              </div>
+            <% end %>
+    
+            <%= render "devise/shared/links" %>
+    
+          </div>
+        </div>
+    
+      </div>
+    </div>
+</div>
+<!-- =========================  SIGN UP FORM ==========================-->
+</div>
+```
+Do the same with ```views/devise/sessions/new.html.erb``` by replacing its content with the following code:
+```html
+<!-- =========================  SIGN IN FORM ==========================-->
+<div class="auth-page">
+    <div class="container">
+        <div class="row">
+          <div class="col-sm-6 mx-auto">
+            <div class="form-block">
+              <h1>Sign in to get started</h1>
+              <div class="form-body">
+                <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+                  <div class="form-group">
+                    <%= f.label :email %><br />
+                    <%= f.email_field :email, class: "form-control", autocomplete: "email" %>
+                  </div>
+        
+                  <div class="form-group">
+                    <%= f.label :password %><br />
+                    <%= f.password_field :password, class: "form-control", autocomplete: "current-password" %>
+                  </div>
+        
+                  <% if devise_mapping.rememberable? -%>
+                    <div class="form-group">
+                      <%= f.check_box :remember_me %>
+                      <%= f.label :remember_me %>
+                    </div>
+                  <% end -%>
+        
+                  <div class="actions form-group">
+                    <%= f.submit "Log in", class:'btn'%>
+                  </div>
+                <% end %>
+                <%= render "devise/shared/links" %>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+```
+
+We can finally start building our home page. 
 Go to ```views/home/index.html.erb``` file and add the following code.
 ```html
 <%= render 'home/partials/nav' %>
@@ -124,6 +221,72 @@ Go to ```views/home/index.html.erb``` file and add the following code.
 <%= render developers %>
 ```
 We are just rendering partials (that we haven't created yet) for the different sections of our home page. 
+Let's define the ```developers``` method in ```helpers/home_helper.rb```:
+```ruby
+def developers
+   if user_signed_in?
+       'home/partials/developers'
+   else
+       'home/partials/empty'
+   end
+end
+```
+This is just to make sure that only signed in users see the developers. Create ```home/partials/_developers.html.erb``` and ```home/partials/_empty.html.erb``` files. In the ```home/partials/_developers.html.erb``` file, add the following code:
+```html
+<section class="developers text-center" id="js-developers">
+    <h2 class=title>No appointment needed. Just chat!</h2>
+    <div class="container">
+        <div class="row my-5">
+            
+            <% @users.each do |user|  %>
+                
+                <div class="col-md-3 col-xs-6">
+                    <%= render 'home/partials/user-card', user: user %>
+                </div>
+                
+            <% end %>
+            
+        </div>
+    </div>
+</section>
+```
+This code displays all the users in our database. But for this to work properly, we need to do a few things; we need to define the ```@users``` instance variable in the index action of our home controller:
+```ruby
+def index
+   @users = User.where.not(id: current_user.id) if user_signed_in?
+end
+```
+We also need to create a partial to display each user. Create ```home/partials/_user-card.html``` file and add the following code:
+```html
+<div class="dev-card p-3 my-3 text-center">
+    <% if user.avatar.attached? %>
+        <%= image_tag user.avatar %>
+    <% else %>
+        <img src="assets/avatar5.jpeg" alt=""> 
+    <% end %>
+    
+    <h6 class="dev-name text-white">
+        <%= user.name %>
+        <span class="appearance <%= user.state %>" id="js-appearance<%= user.id %>">
+            <i class="fas fa-circle"></i>
+        </span>
+    </h6>
+    <h6 class="dev-level"><%= user.level %></h6>
+    <div class="dev-icons">
+        
+        <%= link_to user.github_link, class:'github-icon m-2', title: "Github page", data: {toggle: "tooltip", placement: "top"} do %>
+          <i class="fab fa-github-square"></i>
+        <% end %>
+      
+        <%= link_to '', class:"camera-icon m-2 #{user.state}", id:"js-camera-icon#{user.id}", title: "Start a video call with #{user.name}", data: {id: user.id, name: user.name, toggle: "tooltip", placement: "top"}, remote: true  do %>
+          <i class="fas fa-video"></i>
+        <% end %>
+        
+    </div>
+</div>
+```
+
+
 Inside the home folder, create a ```partials``` folder. Then inside that ```partials``` folder, create the following files: ```_nav.html.erb```, ```_header.html.erb``` and ```_developers.html.erb```. Starting with the navbar, add the following code to the ```_nav.html.erb``` file.
 ```html
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -151,7 +314,7 @@ def links
    end
 end
 ```
-Create the ```home/partials/nav/dropdown.html.erb``` file and add the following code for when the user is logged in:
+Create the ```home/partials/nav/_dropdown.html.erb``` file and add the following code for when the user is logged in:
 ```html
 <li class="nav-item">
     <%= render change_state_btn %>
@@ -171,7 +334,7 @@ Create the ```home/partials/nav/dropdown.html.erb``` file and add the following 
         </div>
 </li>
 ```
-Then create the ```home/partials/nav/auth_links.html.erb``` for when the user is not logged in. Add the following code to it:
+Then create the ```home/partials/nav/_auth_links.html.erb``` for when the user is not logged in. Add the following code to it:
 ```html
 <li class="nav-item">
     <%= link_to 'Sign Up', register_path, class: 'nav-link signup-btn btn btn-success py-1 mx-3' %>
