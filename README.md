@@ -5,9 +5,10 @@ The first thing you'll need to do is to create the ruby on rails app using the r
 rails new VideoCall --database=postgresql
 ```
 
-The command above will create the application, install all the default gems, and initialize webpacker for us. What the --database flag does is simply letting rails know that we want to use postgresql as our database for this project. Rails uses the sqlite3 database by default. After, in the terminal, using the cd command, get into your project folder. 
+The command above will create the application, install all the default gems, and initialize webpacker for us. What the --database flag does is simply letting rails know that we want to use postgresql as our database for this project. Rails uses the sqlite3 database by default. After, in the terminal, using the cd command, get into your project folder by running ```cd VideoCall```. 
 
-### I- Installing Bootstrap 4
+
+### I- Installing Bootstrap 4, adding Font Awesome and Google Fonts
 
 First, let's add bootstrap to our project. Go to the ```views/layouts/application.html.erb``` file and add the bootstrap cdn link in the head tag:
 
@@ -43,7 +44,7 @@ class HomeController < ApplicationController
   end 
 end
 ```
-Now, we need to modify our route file to handle requests to the root of our application. Go to your ```config/routes.rb``` file and the following code:
+Now, we need to modify our route file to handle requests to the root of our application. Go to ```config/routes.rb``` file and add the following code:
 
 #routes.rb
 ```ruby
@@ -56,11 +57,11 @@ This piece of code means that every time a user makes a request to the root of o
 ### II- User authentication with Devise
 
 Before we start building our home page, let's add user authentication to our app. To do that, we are gonna use the devise gem. 
-First, add the devise to your gemfile.
+First, add the devise gem to your gemfile.
 ```ruby
 gem 'devise'
 ```
-Then run bundle install.
+Then run ```bundle install```.
 Next, run the generator:
 ```terminal
 rails generate devise:install
@@ -71,8 +72,8 @@ rails g devise User
 ```
 Then run ```rails db:migrate```
 
-This will not only create our model, but it will also configures your ```config/routes.rb``` file to point to the Devise controller.
-You can now get your auth pages on ```/users/sign_in``` and ```/users/sign_up```.
+This will not only create our model, but it will also configure your ```config/routes.rb``` file to point to the Devise controller.
+You can now get your authentication pages on ```/users/sign_in``` and ```/users/sign_up```.
 Let's change those links into ```/login``` and ```/register```. (You don't have to do this. This is just a personal preference). Go to your ```config/routes.rb``` and add the following code.
 ```ruby
 devise_scope :user do
@@ -81,8 +82,8 @@ devise_scope :user do
    delete 'logout', to: 'devise/sessions#destroy'
 end
 ```
-Now you can go to ```/login``` and ```/register``` for your login and register pages respectively. But that's not it:
-Because we have not changed the default links, we just added new ones. To get rid of the ```/users/sign_in``` and ```/users/sign_up``` links, we need to go to ```app/views/devise/shared/_links.html.erb``` and chage this
+Now you can go to ```/login``` and ```/register``` to get to your login and register pages respectively. But that's not it;
+  We have not changed the default links, we just added new ones. To get rid of the ```/users/sign_in``` and ```/users/sign_up``` links, we need to go to ```app/views/devise/shared/_links.html.erb``` and change this:
 ```html
 <%- if controller_name != 'sessions' %>
   <%= link_to "Log in", new_session_path(resource_name) %><br />
@@ -92,7 +93,7 @@ Because we have not changed the default links, we just added new ones. To get ri
   <%= link_to "Sign up", new_registration_path(resource_name) %><br />
 <% end %>
 ```
-to this
+to this:
 ```html
 <%- if controller_name != 'sessions' %>
   <%= link_to "Log in", login_path %><br />
@@ -106,7 +107,7 @@ Now let's add some attributes to our user model.
 ```terminal
 rails g migration addDetailsToUsers name:string avatar:string level:string github_link:string state:integer
 ```
-Go to the newly create migration file and make some changes for the state field
+Go to the newly created migration file and make some changes to the state field
 ```ruby
 t.integer :state,             null: false, default: 0
 ```
