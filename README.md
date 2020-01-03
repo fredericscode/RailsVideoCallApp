@@ -714,6 +714,93 @@ Here, we are rendering the result of a ```change_state_btn``` method that we def
 - If the developer is 'online', a green 'You are online' button will be rendered, and will change to a red 'Go offline' button when hovered on.
 - If the developer is 'offline', a outline-green 'Go online' button will be rendered, and will change to a green 'Go online' button when hovered on.
 
+Now, go to your ```app/views/home/partials/nav/dropdown/_gonlinebtn.html.erb``` and add the following code: 
+```html
+<%= link_to 'Go Online', online_path, class: 'nav-link state-btn offline mx-3 btn btn-outline-success', id: 'js-offlinebtn', remote: true, method: :post %>
+
+<%= link_to 'You are online', offline_path, class: 'nav-link state-btn online d-none mx-3 btn btn-success', id: 'js-onlinebtn', remote: true, method: :post %>
+```
+Explanation: The 'You are online' button will be hidden by default (d-none). and when the 'Go online' button is clicked, it will be hidden and the 'You are online' button will be displayed. 
+
+Then, go to your ```app/views/home/partials/nav/dropdown/_gofflinebtn.html.erb``` and add tis code:
+```html
+<%= link_to 'You are online', offline_path, class: 'nav-link state-btn online mx-3 btn btn-success', id: 'js-onlinebtn', remote: true, method: :post %>
+
+<%= link_to 'Go Online', online_path, class: 'nav-link state-btn offline d-none mx-3 btn btn-outline-success', id: 'js-offlinebtn', remote: true, method: :post %> 
+```
+Explanation: The 'Go online' button will be hidden by default (d-none). and when the 'You are online' button is clicked, it will be hidden and the 'Go online' button will be displayed. 
+
+Now that we have our buttons in place, we need to create 2 routes; one for the when the developer goes online (online_path), and another one when the developer goes offline (offline_path). Go to your ```config/routes.rb``` and add this code:
+```ruby
+post 'online', to: 'home#online'
+post 'offline', to: 'home#offline'
+```
+As you can see, our requests go to 'online' and 'offline' actions in our home controller. Let's create those actions. Add this to your ```app/controllers/home_controller.rb```:
+```ruby
+def online
+    current_user.online!
+    respond_to do |format|
+        format.js
+    end
+end
+
+def offline
+    current_user.offline!
+    respond_to do |format|
+        format.js
+    end
+end
+```
+Explanation: In the online action, we just change the developer's state to 'online' with ```ruby current_user.online```. After that, since our request is remote, we respond with javascript format, which means that Rails is going to look for a ```views/home/online.js.erb``` file and run it. Same for the offline method, Rails is going to look for and run a ```views/home/offline.js.erb```. Let's create those two files.
+In the ```views/home/online.js.erb``` file, add this:
+```javascript
+var offlineBtn = document.getElementById("js-offlinebtn")
+offlineBtn.classList.add("d-none")
+
+var onlineBtn = document.getElementById("js-onlinebtn")
+onlineBtn.classList.remove("d-none")
+```
+And in the ```views/home/offline.js.erb``` file, add this:
+```javascript
+var onlineBtn = document.getElementById("js-onlinebtn")
+onBtn.classList.add("d-none")
+
+var offlineBtn = document.getElementById("js-offlinebtn")
+offBtn.classList.remove("d-none")
+
+```
+Explanation: Here, in the ```views/home/online.js.erb``` file, we are just hiding the 'Go online' button to display the 'You are online' button. and in the ```views/home/offline.js.erb``` file, we are hiding the 'You are online' button to display the 'Go online' button.
+
+If you test the app, you can see that it's effectively changing the developer's state when you click on the button. But there's one thing that we need to add. When the developer hovers on the 'You are online' button, we want that button to turn red, and the text to say 'Go offline'. To do that, let's create a script.js file in our ```app/javascript/packs``` folder.
+For that file to be run by webpacker, let's import it by adding ```javascript import './script.js'``` in our ```app/javascript/packs/application.js``` file.
+In our ```app/javascript/packs/script.js``` file, add the following code:
+```javascript
+document.addEventListener('DOMContentLoaded', (event) => {
+  /* Change the background color and innerHTML when the online button is hovered */
+  const onlineBtn = document.getElementById('js-onlinebtn')
+  if( onlineBtn !== null) {
+
+      onlineBtn.addEventListener('mouseover', (event) => {
+          onlineBtn.style.backgroundColor = "red"
+          onlineBtn.style.borderColor = "red"
+          onlineBtn.innerHTML = "Go offline"
+
+      })
+
+      onlineBtn.addEventListener('mouseout', (event) => {
+          onlineBtn.style.backgroundColor = "#3DC794"
+          onlineBtn.style.borderColor = "#3DC794"
+          onlineBtn.innerHTML = "You are online"
+
+      })
+  }
+}
+
+```
+Explanation: We get the 'You are online' button, and we change its background color, border color, as well as its text when you hover on it. When you remove the mouse, things get back to normal.
+
+
+
 
 
 
