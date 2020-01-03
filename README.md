@@ -706,6 +706,15 @@ Now our users can add a profile picture when signing up and that picture is goin
 
 ### How to build the online/offline feature using action cable
 
+In this section, we are going to build a online/offline feature for the developers in our application. This is how it's going to work: when a developer logs in, he/she is offline by default. When he/she is ready to talk/chat with other developers, he/she can click a button on the navbar and his state will automatically change from ```offline``` to ```online```. And if he/she clicks on that button again, the state will change back to ```offline```. Thats the first part of our feature. To build this functionnality, you should already have the button rendered in your ```app/views/home/partials/nav/_dropdown.html.erb``` file:
+```html
+<%= render change_state_btn %>
+```
+Here, we are rendering the result of a ```change_state_btn``` method that we defined earlier in the course. That method will give us a 'Go online' or a 'You are online' button depending on the developer's state.
+- If the developer is 'online', a green 'You are online' button will be rendered, and will change to a red 'Go offline' button when hovered on.
+- If the developer is 'offline', a outline-green 'Go online' button will be rendered, and will change to a green 'Go online' button when hovered on.
+
+
 
 
 
