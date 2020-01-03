@@ -751,7 +751,7 @@ def offline
     end
 end
 ```
-Explanation: In the online action, we just change the developer's state to 'online' with ```ruby current_user.online```. After that, since our request is remote, we respond with javascript format, which means that Rails is going to look for a ```views/home/online.js.erb``` file and run it. Same for the offline method, Rails is going to look for and run a ```views/home/offline.js.erb```. Let's create those two files.
+Explanation: In the online action, we just change the developer's state to 'online' with ```current_user.online```. After that, since our request is remote, we respond with javascript format, which means that Rails is going to look for a ```views/home/online.js.erb``` file and run it. Same for the offline method, Rails is going to look for and run a ```views/home/offline.js.erb```. Let's create those two files.
 In the ```views/home/online.js.erb``` file, add this:
 ```javascript
 var offlineBtn = document.getElementById("js-offlinebtn")
@@ -772,7 +772,7 @@ offBtn.classList.remove("d-none")
 Explanation: Here, in the ```views/home/online.js.erb``` file, we are just hiding the 'Go online' button to display the 'You are online' button. and in the ```views/home/offline.js.erb``` file, we are hiding the 'You are online' button to display the 'Go online' button.
 
 If you test the app, you can see that it's effectively changing the developer's state when you click on the button. But there's one thing that we need to add. When the developer hovers on the 'You are online' button, we want that button to turn red, and the text to say 'Go offline'. To do that, let's create a script.js file in our ```app/javascript/packs``` folder.
-For that file to be run by webpacker, let's import it by adding ```javascript import './script.js'``` in our ```app/javascript/packs/application.js``` file.
+For that file to be run by webpacker, let's import it by adding ```import './script.js'``` in our ```app/javascript/packs/application.js``` file.
 In our ```app/javascript/packs/script.js``` file, add the following code:
 ```javascript
 document.addEventListener('DOMContentLoaded', (event) => {
