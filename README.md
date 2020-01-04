@@ -937,6 +937,13 @@ Explanation: When we receive the broadcast signal and the data sent in our ```br
 Now if you test our feature, you will see that it works perfectly.
 
 
+### Building the video call feature using the opentok platform
+
+Now we can start building the main feature of our app. To do that, we are going to use the opentok platform. 
+OpenTok is the leading WebRTC platform for interactive video, enabling voice, video and messaging for mobile and web with our Live Video API.
+
+
+
 
 
 
