@@ -794,7 +794,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
       })
   }
-}
+})
 
 ```
 Explanation: We get the 'You are online' button, and we change its background color, border color, as well as its text when you hover on it. When you remove the mouse, things get back to normal.
