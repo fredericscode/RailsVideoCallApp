@@ -833,8 +833,107 @@ The nav-link section should now look like this
   
 }
 ```
-Now if you test the app, you will see that everything is working fine.
+Now if you test the app, you will see that everything is working fine. 
 
+Next, we are nwo going to add realtime update to the appearance dot everytime a developer's state changes. This means that when a developer goes online, all the developers that are logged in will see the appearance dot on that developer's card change from red to green, and from green to red when the developer goes offline.
+To do this, we are going to use action cable. First, let's create an appearance channel. Run this code in your terminal:
+```terminal
+rails g channel appearance
+```
+Then, go to your ```app/channels/application_cable/connection.rb``` file to setup our connection. Add this code inside the ```Connection``` class of the file:
+```ruby
+identified_by :current_user
+
+def connect
+  self.current_user = find_verified_user
+end
+
+protected
+
+def find_verified_user
+  if (current_user = env['warden'].user)
+    current_user
+  else
+    reject_unauthorized_connection
+  end
+end
+```
+Explanation: Here ```identified_by``` is a connection identifier. It basically represents the user currently logged in.  ```find_verified_user``` returns the current user by using warden, and reject the connection if the user was not found.
+
+The next thing we need to do is to update 'online' and 'offline' methods in our home controller. Modified those methods to make them look like this:
+```ruby
+def online
+      current_user.online!
+      broadcast_change_to_users("online")
+      respond_to do |format|
+          format.js
+      end
+  end
+
+  def offline
+      current_user.offline!
+      broadcast_change_to_users("offline")
+      respond_to do |format|
+          format.js
+      end
+  end
+```
+Then, define the ```broadcast_change_to_users``` function just below them:
+```ruby
+private 
+
+def broadcast_change_to_users(state)
+    ActionCable.server.broadcast(
+        "appearance",
+        state: state,
+        user_id: current_user.id
+    )
+end
+```
+Explanation: After the state change, we broadcast to all the other developers that are logged in and subscribed to the 'appearance' stream(that we haven't defined yet). Doing that, we pass in the state, and the user_id of the developer/user. 
+Let's define the 'appearance' stream by adding this line of code in the ```subscrided``` method of our ```app/channels/appearance_channel.rb```: 
+```ruby
+stream_from "appearance"
+```
+We also need to stop the stream when the channel is unsubscribed. To do that, add this to the ```unsubscribe``` method of the same file:
+```ruby
+stop_all_streams
+```
+
+This broadcast is going to be received by the ```received``` function of our ```app/javascript/channels/appearance_channel.js``` file. Inside that function, add this piece of code:
+```javascript
+//=================== IF THE USER IS ONLINE ============================//////////////
+if (data['state'] === "online") {
+  console.log(data['user_id']);
+  var dot = document.getElementById("js-appearance" + data['user_id']);
+  //var user_state = document.getElementById("user-state" + data['user_id']);
+  var camera_icon = document.getElementById("js-camera-icon" + data['user_id']);
+  if (dot != null && camera_icon != null) { // This values are null for the current_user
+    dot.classList.remove("offline");
+    dot.classList.add("online");
+    camera_icon.classList.remove("offline");
+  }
+  console.log(dot);
+  
+  
+  //===================== IF THE USER IS OFFLINE =========================///////////////
+} else if (data['state'] === "offline" ) { // e.g: the user logged out
+  console.log(data['user_id']);
+  var offDot = document.getElementById("js-appearance" + data['user_id']);
+  var offCameraIcon = document.getElementById("js-camera-icon" + data['user_id']);
+  if (offDot !== null && offCameraIcon !== null) {
+    offDot.classList.remove("online");
+    offDot.classList.add("offline");
+    offCameraIcon.classList.remove("online");
+    offCameraIcon.classList.add("offline");
+        
+  }
+  console.log(dot);
+}
+```
+Explanation: When we receive the broadcast signal and the data sent in our ```broadcast_change_to_users``` method, we first check the developer's state. If the developer is went online, we simply display the camera icon on his card and we also change the color of its appearance dot from red to green. If the developer went offline, we hide the camera icon on his card, and we change the color of its appearance dot from green to red.
+
+Now if you test our feature, you will see that it works perfectly.
 
 
 
