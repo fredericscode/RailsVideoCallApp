@@ -1,4 +1,4 @@
-## How to build a live, face-to-face video call app in Ruby on Rails 6.0.1
+## How to build a live, face-to-face video chat app in Ruby on Rails 6.0.2.1
 The first thing you'll need to do is to create the ruby on rails app using the rails command:
 
 ```terminal
