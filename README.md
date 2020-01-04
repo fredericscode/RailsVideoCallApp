@@ -799,6 +799,44 @@ document.addEventListener('DOMContentLoaded', (event) => {
 ```
 Explanation: We get the 'You are online' button, and we change its background color, border color, as well as its text when you hover on it. When you remove the mouse, things get back to normal.
 
+Now, let's style the state button by adding this code to ```app/assets/stylesheets/home.scss``` file, inside the nav-link section, just below the ```&.signup-btn :
+```css
+&.state-btn {
+    border-color: $greenColor;
+    color: $greenColor !important;
+  }
+&.state-btn:hover, &.state-btn.online {
+  background-color: $greenColor;
+  border-color: $greenColor;
+  color: white !important;
+}
+```
+The nav-link section should now look like this
+```css
+.nav-link {
+  color: white !important;
+  font-size: 16px;
+  font-weight: 600;
+  &.signup-btn {
+    background-color: $greenColor;
+    border-color: $greenColor;
+  }
+  &.state-btn {
+    border-color: $greenColor;
+    color: $greenColor !important;
+  }
+  &.state-btn:hover, &.state-btn.online {
+    background-color: $greenColor;
+    border-color: $greenColor;
+    color: white !important;
+  }
+  
+}
+```
+Now if you test the app, you will see that everything is working fine.
+
+
+
 
 
 
