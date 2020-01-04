@@ -1,4 +1,4 @@
-## How to build a video call app in Ruby on Rails 6.0.1
+## How to build a live, face-to-face video call app in Ruby on Rails 6.0.1
 The first thing you'll need to do is to create the ruby on rails app using the rails command:
 
 ```terminal
@@ -840,6 +840,7 @@ To do this, we are going to use action cable. First, let's create an appearance 
 ```terminal
 rails g channel appearance
 ```
+Also, uncomment the redis gem in your gemfile and run ```bundle install``` in your terminal.
 Then, go to your ```app/channels/application_cable/connection.rb``` file to setup our connection. Add this code inside the ```Connection``` class of the file:
 ```ruby
 identified_by :current_user
