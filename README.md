@@ -1032,6 +1032,72 @@ Now that we have our three modals, we need to render them in our `app/views/layo
 <%= render 'home/partials/modals/sender_notif_modal' %>
 <%= render 'home/partials/modals/session_modal' %>
 ```
+Then, let's go to our `app/assets/stylesheets/home.scss` file and add some styles to our modals.
+###### `app/assets/stylesheets/home.scss`
+```css
+//===================== Modal =============================
+.modal {
+  .modal-header {
+    //background-color: white;
+    .fas {
+      margin: 4px 0px 0px 10px;
+      color: green;
+    }
+    .fas.fa-video-slash {
+      color: red;
+    }
+
+    .modal-title {
+      color: white;
+    }
+
+  }
+  .modal-body {
+    .fas {
+      font-size: 18px;
+      margin-left: 10px;
+      color: green;
+    }
+    #session_id, #sender_id {
+      display: none;
+    }
+  }
+  .modal-footer {
+    //background-color: #121212;
+    //color: white;
+  }
+
+}
+
+#modal-body-session {
+  padding: 0px;
+  height: 400px;
+  .session {
+    background-color: black;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    #subscriber {
+      position: relative;
+      top: 0px;
+      left: 0px;
+      width: 100%;
+      height: 100%;
+    }
+    #publisher {
+      position: absolute;
+      width: 30%;
+      height: 30%;
+      bottom: 0px;
+      right: 0px;
+      z-index: 1000;
+
+    }
+  }
+}//==================== Modal ============================
+```
 
 
 
