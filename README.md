@@ -1025,6 +1025,15 @@ Let's code our modals:
 
 </div> 
 ```
+Now that we have our three modals, we need to render them in our `app/views/layouts/application.html.erb` file. Add this code right before the script tags at the bottom of the file.
+###### `app/views/layouts/application.html.erb`
+```html
+<%= render 'home/partials/modals/receiver_notif_modal' %>
+<%= render 'home/partials/modals/sender_notif_modal' %>
+<%= render 'home/partials/modals/session_modal' %>
+```
+
+
 
 
 
