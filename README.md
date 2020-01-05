@@ -940,7 +940,92 @@ Now if you test our feature, you will see that it works perfectly.
 ### Building the video call feature using the opentok platform
 
 Now we can start building the main feature of our app. To do that, we are going to use the opentok platform. 
-OpenTok is the leading WebRTC platform for interactive video, enabling voice, video and messaging for mobile and web with our Live Video API.
+OpenTok is the leading WebRTC platform for interactive video, enabling voice, video and messaging for mobile and web with our Live Video API. 
+Let's start by adding the bootstrap modals. Create the following files in your views folder:
+```app/views/home/partials/modals/_receiver_notif_modal.html.erb```
+```app/views/home/partials/modals/_sender_notif_modal.html.erb```
+```app/views/home/partials/modals/_session_modal.html.erb```
+The first file is for the notification sent to a dev when another dev is calling him/her.
+The second file is for the notification that pops up when a dev calls another dev (when you click on the camera icon).
+The third file is for the session itself (the video).
+Let's code our modals:
+
+###### ```app/views/home/partials/modals/_receiver_notif_modal.html.erb```
+```html
+<div class="modal fade" id="receiver-notif-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content">
+      <!--<div class="modal-header">
+        <h6 class="modal-title" id="exampleModalLabel">Incoming video call</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>-->
+      <div class="modal-body">
+        <span><strong id="sender_name"></strong> is calling</span>
+        <%= link_to '', id:'answer-call' do %>
+          <i class="fas fa-video"></i>
+        <% end %>
+        <h6 id="session_id"></h6>
+        <h6 id="sender_id"></h6>
+      </div>
+    </div>
+  </div>
+</div> 
+```
+
+###### ```app/views/home/partials/modals/_sender_notif_modal.html.erb```
+```html
+<div class="modal fade" id="sender-notif-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-body">
+        <span>Calling <strong id="recipient_name_modal"></strong></span>
+        <% 3.times do %>
+            <div class="spinner-grow text-info" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</div> 
+```
+
+###### ```app/views/home/partials/modals/_session_modal.html.erb```
+```html
+<div class="modal fade" id="session-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <%= link_to '', class:"modal-title", id:"stop-session" do %>
+          <i class="fas fa-video-slash"></i>
+        <% end %>
+        <!--class="modal-title" id="exampleModalLabel"-->
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="modal-body-session">
+        <div class="session">
+          <div id="subscriber">
+
+          </div>
+          <div id="publisher">
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</div> 
+```
+
 
 
 
