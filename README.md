@@ -1101,6 +1101,65 @@ Then, let's go to our `app/assets/stylesheets/home.scss` file and add some style
 
 
 
+```css
+//========Avatar upload styles=========//
+    .avatar-wrapper{
+    	position: relative;
+    	height: 100px;
+    	width: 100px;
+    	margin: 50px auto;
+    	border-radius: 50%;
+    	overflow: hidden;
+    	box-shadow: 1px 1px 15px -5px black;
+    	transition: all .3s ease;
+    	&:hover{
+    		transform: scale(1.05);
+    		cursor: pointer;
+    	}
+    	&:hover .profile-pic{
+    		opacity: .5;
+    	}
+    	.profile-pic {
+            height: 100%;
+        	width: 100%;
+        	transition: all .3s ease;
+        	  &:after{
+        		  //font-family: FontAwesome;
+        		  content: "Upload Avatar";
+        		  top: 0px; left: 0;
+        		  width: 100%;
+        		  height: 100%;
+        		  position: absolute;
+        		  font-size: 20px;
+        		  background: #ecf0f1;
+        		  color: #34495e;
+        		  text-align: center;
+        		  padding-top: 15px;
+        	  }
+    	}
+    	.upload-button {
+    		position: absolute;
+    		top: 0; left: 0;
+    		height: 100%;
+    		width: 100%;
+    		.fa-arrow-circle-up{
+    			position: absolute;
+    			font-size: 100px;
+    			top: 0px;
+    			left: 0px;
+    			text-align: center;
+    			opacity: 0;
+    			transition: all .3s ease;
+    			color: #34495e;
+    		}
+    		&:hover .fa-arrow-circle-up{
+    			opacity: .9;
+    		}
+    	}
+    }
+    //========Avatar upload styles=========//
+    
+```
 
 
 
