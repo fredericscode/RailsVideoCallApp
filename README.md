@@ -1,4 +1,7 @@
 <h2 color="red">How to build a live, face-to-face video chat app in Ruby on Rails 6.0.2.1</h2>
+<div class="text-green mb-2 ml-4">
+  .text-green on white
+</div>
 The first thing you'll need to do is to create the ruby on rails app using the rails command:
 
 ```terminal
