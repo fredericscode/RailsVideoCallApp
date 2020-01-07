@@ -536,10 +536,12 @@ Go to ```home/partials/_header.html.erb``` and add this:
 <div class="jumbotron jumbotron-fluid mb-0">
     <div class="container">
         <div class="update">
-            <p class="py-1 px-2"><span class="soon mx-2 p-1">SOON</span>TextChat: Instant text messaging coming out soon <i class="fas fa-chevron-right"></i></p>
+            <p class="py-1 px-2"><span class="soon mx-2 p-1">SOON</span>TextChat: Instant text messaging coming out soon <i               class="fas fa-chevron-right"></i>
+	    </p>
         </div>
         <h1 class="display-4 text-white">The right way to chat with developers, globally</h1>
-        <p class="lead mb-5">Don't let VAT / GST / Sales Tax be the hassle of your billing model. Determine the right rate for every transaction - at item level -, send compliant tax invoices and power your accounting. Do it automatically and around the globe with Octobat.</p>
+        <p class="lead mb-5">Have an idea to share? Need help with a coding challenge? Come chat with your fellow developers.         Do it automatically and around the globe with DevTime. No appointment needed!
+	</p>
         <div class="buttons">
             <%= render btnStart %>
             <a class="btn btn-primary disabled" href="#">TextChat coming soon!!!</a>
