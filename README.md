@@ -1169,6 +1169,10 @@ Then, let's go to our `app/assets/stylesheets/home.scss` file and add some style
 
 ![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
 
+<p align="center">
+  <img width="460" height="300" src="https://github.com/fredericscode/rails/blob/master/app/assets/images/avatar5.jpeg">
+</p>
+
 
 
 
