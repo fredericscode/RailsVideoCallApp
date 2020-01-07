@@ -45,7 +45,7 @@ rails g controller home index
 ```
 This creates a controller, an index action and a ```app/views/home/index.html.erb``` template to display our home page.
 
-```######home_controller.rb ```
+```###### home_controller.rb ```
 ```ruby
 class HomeController < ApplicationController
   def index  
@@ -54,7 +54,7 @@ end
 ```
 Now, we need to modify our route file to handle requests to the root of our application. Go to ```config/routes.rb``` file and add the following code:
 
-```######routes.rb```
+```###### routes.rb```
 ```ruby
 Rails.application.routes.draw do
   root to: 'home#index'
