@@ -1162,7 +1162,7 @@ Then, let's go to our `app/assets/stylesheets/home.scss` file and add some style
 ```
 
 
-<img src="s3://fredericscode/56hmjxsynj1dysy4afswac4rppn6"/>
+<img src="https://fredericscode.s3.us-east-2.amazonaws.com/56hmjxsynj1dysy4afswac4rppn6"/>
 
 
 
