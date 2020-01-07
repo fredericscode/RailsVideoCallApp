@@ -1162,15 +1162,9 @@ Then, let's go to our `app/assets/stylesheets/home.scss` file and add some style
 ```
 
 
-<img src="https://fredericscode.s3.us-east-2.amazonaws.com/56hmjxsynj1dysy4afswac4rppn6"/>
-
-![alt text](https://github.com/fredericscode/rails/blob/master/app/assets/images/avatar5.jpeg "Logo Title Text 1")
-
-
-![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
 
 <p align="center">
-  <img src="https://github.com/fredericscode/rails/blob/master/app/assets/images/avatar5.jpeg">
+  <img src="https://github.com/fredericscode/rails/blob/master/app/assets/images/Workathome.png">
 </p>
 
 
