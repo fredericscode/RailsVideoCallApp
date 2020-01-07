@@ -62,10 +62,34 @@ end
 ```
 This piece of code means that every time a user makes a request to the root of our app ('/'), the request is going to be handled by the index action of our home controller.
 
+If you go to ```localhost:3000```, you will see our home page.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### II- User authentication with Devise
 
 Before we start building our home page, let's add user authentication to our app. To do that, we are gonna use the devise gem. 
 First, add the devise gem to your gemfile.
+###### ```gemfile.rb```
 ```ruby
 gem 'devise'
 ```
@@ -74,6 +98,8 @@ Next, run the generator:
 ```terminal
 rails generate devise:install (Follow instructions)
 ```
+Generate devise views by running: ```rails g devise:views```.
+
 Now it's time to create our user model.
 ```terminal
 rails g devise User
@@ -90,8 +116,7 @@ devise_scope :user do
    delete 'logout', to: 'devise/sessions#destroy'
 end
 ```
-Now you can go to ```/login``` and ```/register``` to get to your login and register pages respectively. But that's not it;
-  We have not changed the default links, we just added new ones. To get rid of the ```/users/sign_in``` and ```/users/sign_up``` links, we need to go to ```app/views/devise/shared/_links.html.erb``` and change this:
+And go to ```app/views/devise/shared/_links.html.erb``` and change this:
 ```html
 <%- if controller_name != 'sessions' %>
   <%= link_to "Log in", new_session_path(resource_name) %><br />
@@ -111,11 +136,15 @@ to this:
   <%= link_to "Sign up", register_path %><br />
 <% end %>
 ```
-Now let's add some attributes to our user model. 
+Now you can go to ```/login``` and ```/register``` to get to your login and register pages respectively.
+
+### III- Adding custom attributes to the users
+
+To add some attributes to our user model, run this code on your terminal.
 ```terminal
-rails g migration addDetailsToUsers name:string avatar:string level:string github_link:string state:integer
+rails g migration addDetailsToUsers name:string avatar:string github_link:string state:integer
 ```
-Go to the newly created migration file and make some changes to the state field
+Go to the newly created migration file and make some changes to the ```state``` field:
 ```ruby
 add_column :users, :state, :integer, default: 0
 ```
@@ -133,7 +162,15 @@ Now let's build our login and register pages. Go to ```views/devise/registration
           <div class="form-body">
             <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
               <%= devise_error_messages! %>
-    
+              
+              <div class="avatar-wrapper">
+                  <img class="profile-pic" src="" />
+                  <div class="upload-button">
+                	  <i class="fa fa-arrow-circle-up" aria-hidden="true"></i>
+                  </div>
+	                <%= f.file_field :avatar, class: "file-upload form-control" %>
+              </div>
+            
               <div class="form-row">
                 <div class="form-group col-md-6">
                   <%= f.label :name %><br />
@@ -146,14 +183,6 @@ Now let's build our login and register pages. Go to ```views/devise/registration
                 <div class="form-group col-md-6">
                   <%= f.label :github_link %><br />
                   <%= f.text_field :github_link, class: "form-control" %>
-                </div>
-                <div class="form-group col-md-6">
-                  <%= f.label :avatar %><br />
-                  <%= f.file_field :avatar, class: "form-control" %>
-                </div>
-                <div class="form-group col-md-6">
-                  <%= f.label :level %><br />
-                  <%= f.select :level, [['Junior', 'junior'], ['Senior', 'senior']], class: "form-control" %>
                 </div>
                 <div class="form-group col-md-6">
                   <%= f.label :password %>
@@ -217,32 +246,38 @@ Do the same with ```views/devise/sessions/new.html.erb``` by replacing its conte
     </div>
 </div>
 ```
-Now we need to whitelist those new attributes. To do that, we are going to create our own registrations controller. In ```app/controllers```, create ```registrations_controller.rb``` and add this code:
+Now we need to whitelist those new attributes. To do that, we are going to create our own ```registrations``` controller. In ```app/controllers```, create ```registrations_controller.rb``` and add this code:
 ```ruby
 class RegistrationsController < Devise::RegistrationsController
 
   private
 
   def sign_up_params
-    params.require(:user).permit(:name, :email, :avatar, :github_link, :level, :password)
+    params.require(:user).permit(:name, :email, :avatar, :github_link, :password)
   end
 
   def account_update_params
-    params.require(:user).permit(:name, :email, :github_link, :level, :avatar, :password)
+    params.require(:user).permit(:name, :email, :github_link, :avatar, :password)
   end
 end
 ```
-We extended the sign_up_params method by adding our attributes(including the new ones) to ```params.require(:user).permit```.
-We also added the ```account_update_params``` method, although we are not gonna need it.
+###### ```Exlanation``` 
+We modified the devise's ```sign_up_params``` method by adding our attributes(including the new ones) to ```params.require(:user).permit```.
+We did the same thing for the ```account_update_params``` method, although we are not gonna need it.
 
-Now we need to instruct rails to use our registrations controller, not devise registration controller. We can do that ```config/routes.rb``` by replacing ```devise_for :users``` with ```devise_for :users, controllers: { registrations: "registrations" }```.
+Now we need to instruct rails to use our newly created ```registrations``` controller, not devise's registrations controller. We can do that ```config/routes.rb``` by replacing ```devise_for :users``` with ```devise_for :users, controllers: { registrations: "registrations" }```.
 
-Since we are going to be working with images, let's go ahead and initialize active storage by running ```rails active_storage:install``` and then ```rails db:migrate```. Then add this to your ```models/user.rb``` file:
+### IV- Initializing active storage
+
+Since we are going to be working with images, let's go ahead and initialize active storage by running ```rails active_storage:install``` and then ```rails db:migrate```. 
+Now, add this to your ```models/user.rb``` file:
 ```ruby
 has_one_attached :avatar
 ```
 
-### Building the Home page
+### V- Building the Home page
+
+  ###### V- 1. Developers section
 
 We can finally start building our home page. 
 Go to ```views/home/index.html.erb``` file and add the following code.
@@ -253,7 +288,7 @@ Go to ```views/home/index.html.erb``` file and add the following code.
 
 <%= render developers %>
 ```
-We are just rendering partials (that we haven't created yet) for the different sections of our home page. 
+Here, we are just rendering partials (that we haven't created yet) for the different sections of our home page. 
 Let's define the ```developers``` method in ```helpers/home_helper.rb```:
 ```ruby
 def developers
@@ -264,7 +299,9 @@ def developers
    end
 end
 ```
-This is just to make sure that only signed in users see the developers. Create ```home/partials/_developers.html.erb``` and ```home/partials/_empty.html.erb``` files. In the ```home/partials/_developers.html.erb``` file, add the following code:
+This is just to make sure that only signed in users see the developers section.
+Create ```views/home/partials/_developers.html.erb``` and ```views/home/partials/_empty.html.erb``` files. 
+In the ```home/partials/_developers.html.erb``` file, add the following code:
 ```html
 <section class="developers text-center" id="js-developers">
     <h2 class=title>No appointment needed. Just chat!</h2>
@@ -284,12 +321,17 @@ This is just to make sure that only signed in users see the developers. Create `
 </section>
 ```
 This code displays all the users in our database. But for this to work properly, we need to do a few things; we need to define the ```@users``` instance variable in the index action of our home controller:
+###### ```home_controller.rb```
 ```ruby
 def index
    @users = User.where.not(id: current_user.id) if user_signed_in?
 end
 ```
-We also need to create a partial to display each user. Create ```home/partials/_user-card.html``` file and add the following code:
+###### ```Explanation```
+If there's a signed in user, we get all the users in the dabatase except that user.
+
+
+We also need to create a partial to display each user. Create ```views/home/partials/_user-card.html``` file and add the following code:
 ```html
 <div class="dev-card p-3 my-3 text-center">
     <% if user.avatar.attached? %>
@@ -304,7 +346,6 @@ We also need to create a partial to display each user. Create ```home/partials/_
             <i class="fas fa-circle"></i>
         </span>
     </h6>
-    <h6 class="dev-level"><%= user.level %></h6>
     <div class="dev-icons">
         
         <%= link_to user.github_link, class:'github-icon m-2', title: "Github page", data: {toggle: "tooltip", placement: "top"} do %>
@@ -319,8 +360,9 @@ We also need to create a partial to display each user. Create ```home/partials/_
 </div>
 ```
 
-
-Inside the home folder, create a ```partials``` folder. Then inside that ```partials``` folder, create the following files: ```_nav.html.erb```, ```_header.html.erb``` and ```_developers.html.erb```. Starting with the navbar, add the following code to the ```_nav.html.erb``` file.
+  ###### V- 2. Navbar section
+  
+Inside the ```partials``` folder, create the following files: ```_nav.html.erb```, ```_header.html.erb```. Starting with the navbar, add the following code to the ```_nav.html.erb``` file.
 ```html
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
@@ -337,7 +379,7 @@ Inside the home folder, create a ```partials``` folder. Then inside that ```part
     </div>
 </nav>
 ```
-This is a bootstrap navbar that I modified to suit the needs of our application. Notice the ```<%= render links %>``` part? This is going to render the result of a ```links``` method depending on the authentication status of the user. So, if the user is logged in, we want to display that user's name, and if the user is not logged in, we just display the authentication links (Login and SignUp). To create the ```links``` method, go to ```helpers/home_helper.rb``` file and add the following code:
+This is a bootstrap navbar that I modified to suit the needs of our application. Notice the ```<%= render links %>``` part? This is going to render the result of a ```links``` method depending on the authentication status of the user. So, if the user is logged in, we want to display that user's name and the button the change the state, and if the user is not logged in, we just display the authentication links (Login and SignUp). To create the ```links``` method, go to ```helpers/home_helper.rb``` file and add the following code:
 ```ruby
 def links
    if user_signed_in?
@@ -377,6 +419,7 @@ The ```online``` method above is not defined. To define it, we gonna use enums. 
 ```ruby
 enum state: { offline: 0, online: 1 }
 ```
+###### ```Explanation```
 This adds ```online``` and ```offline``` methods to our user model. We can now use ```user.online!``` and ```user.offline!``` to change the user's state (0 to 1, or 1 to 0), but we can also use ```user.online?``` and ```user.offline?``` to check if the user is online or offline. 
 
 Next, create ```home/partials/nav/dropdown/_gofflinebtn.html.erb``` and ```home/partials/nav/dropdown/_gonlinebtn.html.erb``` (leave them empty for now) and run the server.
@@ -392,7 +435,24 @@ Then create the ```home/partials/nav/_auth_links.html.erb``` for when the user i
     <%= link_to 'Log In', login_path, class: 'nav-link mx-3' %>
 </li>
 ```
-Now when you go to ```localhost:3000```, you can see our navbar. But it doesn't look really good, so let's style it.
+Now when you go to ```localhost:3000```, you can see our navbar.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+But it doesn't look really good, so let's style it.
 Go to ```app/assets/stylesheets/``` and create a ```variables.scss``` file. Add the following code to that file:
 ```css
 $grayColor:  #8A8D91;
@@ -408,7 +468,7 @@ $greenColor: #3DC794;
   font-weight: 500;
 }
 ```
-This is where we are going to keep our sass variables for our styles.
+That's where we are going to keep our sass variables for our styles.
 Now go to ```app/assets/stylesheets/home.scss``` and add this:
 ```css
 @import "./variables";
@@ -446,9 +506,72 @@ body {
 ```
 Now our navbar is exactly the way we want it to be.
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  ###### V- 3. Header section
+  
+Next, let's build the header section.
+Go to ```home/partials/_header.html.erb``` and add this:
+```html
+<div class="jumbotron jumbotron-fluid mb-0">
+    <div class="container">
+        <div class="update">
+            <p class="py-1 px-2"><span class="soon mx-2 p-1">SOON</span>TextChat: Instant text messaging coming out soon <i class="fas fa-chevron-right"></i></p>
+        </div>
+        <h1 class="display-4 text-white">The right way to chat with developers, globally</h1>
+        <p class="lead mb-5">Don't let VAT / GST / Sales Tax be the hassle of your billing model. Determine the right rate for every transaction - at item level -, send compliant tax invoices and power your accounting. Do it automatically and around the globe with Octobat.</p>
+        <div class="buttons">
+            <%= render btnStart %>
+            <a class="btn btn-primary disabled" href="#">TextChat coming soon!!!</a>
+        </div>
+    </div>
+</div>
+<div class="text-right">
+    <img class="header-image d-none d-md-block mt-3" src="<%= image_path('Workathome.png') %>" alt="">
+</div>
+```
+Define the ```btnStart``` method in ```helpers/home_helper.rb```:
+```ruby
+def btnStart
+    if user_signed_in?
+        "home/partials/startbtn/scrollbtn"
+    else
+        "home/partials/startbtn/authbtn"
+    end
+end
+```
+Create the ```home/partials/startbtn/_scrollbtn.html.erb``` and ```home/partials/startbtn/_authbtn.html.erb``` files.
+In the ```home/partials/startbtn/_scrollbtn.html.erb``` file, add this: 
+```html
+<%= link_to 'Start now', '#', class: 'start-btn btn btn-success mr-1', id: 'js-start-btn' %>
+```
+And in the ```home/partials/startbtn/_authbtn.html.erb``` file, add this:
+```html
+<%= link_to 'Start now', login_path, class: 'start-btn btn btn-success mr-1', id: 'js-start-btn-auth' %>
+```
+
 Let's also style our auth pages, our header and the developers section. Add the following code to ```app/assets/stylesheets/home.scss```:
 ```css
-/** =================== JUMBOTRON STYLES ================== **/
+/** =================== HEADER STYLES ================== **/
 
 .jumbotron {
   background-image: linear-gradient(to right, #141B5D, #4756A7);
@@ -568,6 +691,65 @@ Let's also style our auth pages, our header and the developers section. Add the 
     font-weight: 700;
   }
   .form-body {
+  
+    //========Avatar upload styles=========//
+    .avatar-wrapper{
+    	position: relative;
+    	height: 100px;
+    	width: 100px;
+    	margin: 50px auto;
+    	border-radius: 50%;
+    	overflow: hidden;
+    	box-shadow: 1px 1px 15px -5px black;
+    	transition: all .3s ease;
+    	&:hover{
+    		transform: scale(1.05);
+    		cursor: pointer;
+    	}
+    	&:hover .profile-pic{
+    		opacity: .5;
+    	}
+    	.profile-pic {
+            height: 100%;
+        	width: 100%;
+        	transition: all .3s ease;
+        	  &:after{
+        		  //font-family: FontAwesome;
+        		  content: "Upload Avatar";
+        		  top: 0px; left: 0;
+        		  width: 100%;
+        		  height: 100%;
+        		  position: absolute;
+        		  font-size: 20px;
+        		  background: #ecf0f1;
+        		  color: #34495e;
+        		  text-align: center;
+        		  padding-top: 15px;
+        	  }
+    	}
+    	.upload-button {
+    		position: absolute;
+    		top: 0; left: 0;
+    		height: 100%;
+    		width: 100%;
+    		.fa-arrow-circle-up{
+    			position: absolute;
+    			font-size: 100px;
+    			top: 0px;
+    			left: 0px;
+    			text-align: center;
+    			opacity: 0;
+    			transition: all .3s ease;
+    			color: #34495e;
+    		}
+    		&:hover .fa-arrow-circle-up{
+    			opacity: .9;
+    		}
+    	}
+    }
+    //========Avatar upload styles=========//
+    
+    
     label, em {
       color: $grayColor;
       text-transform: uppercase;
@@ -600,52 +782,33 @@ Let's also style our auth pages, our header and the developers section. Add the 
 
   }
 }//========================== Auth form =====================
+```
+Now our home page looks beautiful.
 
-```
 
-Next, let's build the header section.
-Go to ```home/partials/_header.html.erb``` and add this:
-```html
-<div class="jumbotron jumbotron-fluid mb-0">
-    <div class="container">
-        <div class="update">
-            <p class="py-1 px-2"><span class="soon mx-2 p-1">SOON</span>TextChat: Instant text messaging coming out soon <i class="fas fa-chevron-right"></i></p>
-        </div>
-        <h1 class="display-4 text-white">The right way to chat with developers, globally</h1>
-        <p class="lead mb-5">Don't let VAT / GST / Sales Tax be the hassle of your billing model. Determine the right rate for every transaction - at item level -, send compliant tax invoices and power your accounting. Do it automatically and around the globe with Octobat.</p>
-        <div class="buttons">
-            <%= render btnStart %>
-            <a class="btn btn-primary disabled" href="#">TextChat coming soon!!!</a>
-        </div>
-    </div>
-</div>
-<div class="text-right">
-    <img class="header-image d-none d-md-block mt-3" src="<%= image_path('Workathome.png') %>" alt="">
-</div>
-```
-Define the ```btnStart``` method in ```helpers/home_helper.rb```:
-```ruby
-def btnStart
-    if user_signed_in?
-        "home/partials/startbtn/scrollbtn"
-    else
-        "home/partials/startbtn/authbtn"
-    end
-end
-```
-Create the ```home/partials/startbtn/_scrollbtn.html.erb``` and ```home/partials/startbtn/_authbtn.html.erb``` files.
-In the ```home/partials/startbtn/_scrollbtn.html.erb``` file, add this: 
-```html
-<%= link_to 'Start now', '#', class: 'start-btn btn btn-success mr-1', id: 'js-start-btn' %>
-```
-And in the ```home/partials/startbtn/_authbtn.html.erb``` file, add this:
-```html
-<%= link_to 'Start now', login_path, class: 'start-btn btn btn-success mr-1', id: 'js-start-btn-auth' %>
-```
 
-### Styling Devise notifications with Bootstrap
 
-Devise alerts are really ugly, let's make them look good. First, go to your ```app/views/layouts/application.html.erb``` file and change the first two lines of the body element with the following code:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### VI- Styling Devise notifications with Bootstrap
+
+Devise alerts are really ugly, let's make them look good. First, go to your ```app/views/layouts/application.html.erb``` file and add this code right below the opening tag of the body element:
 ```html
 <!-- Devise notification styled with bootstrap -->
 <% if notice %>
@@ -674,19 +837,50 @@ Then, go to your ```app/assets/stylesheets/home.scss``` and add this:
   }
 }// ========= Bootstrap notification ==========
 ```
-That's it!!! Now we a you login, register or logout, you have beautiful notifications displayed on top of the navbar.
+That's it!!! Now whenever a user logs in, registers or logs out, you have beautiful notifications displayed on top of the navbar.
 
 
-### Image upload on AWS S3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### VII- Image upload on AWS S3
 
 Now is time to allow users to choose a profile picture and upload it to aws using active storage.
-First, go to ```config/environments/development.rb``` and change ```config.active_storage.service = :local``` to ```config.active_storage.service = :amazon```. Then, uncomment the amazon section in your ```config/storage.yml``` and add your AWS S3 credentials. You secure your credentials, you can use rails credentials to store them, but I prefer to store mine inside environment variables. To do that, I'm going create a ```config/local_env.yml``` file. And inside that file, I'm going to store my credentials like this:
+First, go to ```config/environments/development.rb``` and change ```config.active_storage.service = :local``` to ```config.active_storage.service = :amazon```. Then, uncomment the amazon section in your ```config/storage.yml``` and add your AWS S3 credentials.
+```yml
+# Use rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
+amazon:
+  service: S3
+  access_key_id: <%= ENV["ACCESS_KEY_ID"] %>
+  secret_access_key: <%= ENV["SECRET_ACCESS_KEY"] %>
+  region: your_region
+  bucket: you_bucket
+```
+To secure your credentials, you can use rails credentials to store them, but I prefer to store mine inside environment variables. To do that, let's create a ```config/local_env.yml``` file. And inside that file, we are going to store our credentials like this:
 ```yml
 AWS_ACCESS_KEY_ID: 'my_access_key_id'
 AWS_SECRET_ACCESS_KEY: 'my_secret_access_key'
 ```
 
-After setting env variables, we have to set those env variables into config/application.rb file.
+After setting our variables, we have to set those env variables into config/application.rb file.
 In the config/application.rb file, add the below code:
 ```ruby
 config.before_configuration do
@@ -696,6 +890,9 @@ config.before_configuration do
   end if File.exists?(env_file)
 end
 ```
+###### ```Explanation```
+We read the ```config/local_env.yml``` file and we store our credentials inside environment variables.
+
 Don't forget to add your local_env.yml file in your .gitgnore file.
 
 Next add ```gem "aws-sdk-s3", require: false``` in our gemfile and uncomment the ```image_processing``` gem.
@@ -704,9 +901,32 @@ Run ```bundle install```.
 
 Now our users can add a profile picture when signing up and that picture is going to be saved to aws s3.
 
-### How to build the online/offline feature using action cable
 
-In this section, we are going to build a online/offline feature for the developers in our application. This is how it's going to work: when a developer logs in, he/she is offline by default. When he/she is ready to talk/chat with other developers, he/she can click a button on the navbar and his state will automatically change from ```offline``` to ```online```. And if he/she clicks on that button again, the state will change back to ```offline```. Thats the first part of our feature. To build this functionnality, you should already have the button rendered in your ```app/views/home/partials/nav/_dropdown.html.erb``` file:
+
+
+
+
+
+
+
+                                                  GIF
+
+
+
+
+
+
+
+
+
+
+
+
+### VIII- Building the online/offline feature using action cable
+
+  ###### VIII- 1. Allowing developers to go from 'online' to 'offline'
+
+In this section, we are going to build the ```online/offline``` feature for the developers in our application. This is how it's going to work: when a developer logs in, he/she is offline by default. When he/she is ready to talk/chat with other developers, he/she can click a button on the navbar and his state will automatically change from ```offline``` to ```online```. And if he/she clicks on that button again, the state will change back to ```offline```. Thats the first part of our feature. To build this functionnality, you should already have the button rendered in your ```app/views/home/partials/nav/_dropdown.html.erb``` file:
 ```html
 <%= render change_state_btn %>
 ```
@@ -730,7 +950,7 @@ Then, go to your ```app/views/home/partials/nav/dropdown/_gofflinebtn.html.erb``
 ```
 Explanation: The 'Go online' button will be hidden by default (d-none). and when the 'You are online' button is clicked, it will be hidden and the 'Go online' button will be displayed. 
 
-Now that we have our buttons in place, we need to create 2 routes; one for the when the developer goes online (online_path), and another one when the developer goes offline (offline_path). Go to your ```config/routes.rb``` and add this code:
+Now that we have our buttons in place, we need to create 2 routes; one for when the developer goes online (online_path), and another one when the developer goes offline (offline_path). Go to your ```config/routes.rb``` and add this code:
 ```ruby
 post 'online', to: 'home#online'
 post 'offline', to: 'home#offline'
@@ -751,7 +971,7 @@ def offline
     end
 end
 ```
-Explanation: In the online action, we just change the developer's state to 'online' with ```current_user.online```. After that, since our request is remote, we respond with javascript format, which means that Rails is going to look for a ```views/home/online.js.erb``` file and run it. Same for the offline method, Rails is going to look for and run a ```views/home/offline.js.erb```. Let's create those two files.
+Explanation: In the online action, we just change the developer's state to 'online' with ```current_user.online```. After that, since it's an ajax request(remote), we respond with javascript format, which means that Rails is going to look for a ```views/home/online.js.erb``` file and run it. Same for the offline method, Rails is going to look for and run a ```views/home/offline.js.erb```. Let's create those two files.
 In the ```views/home/online.js.erb``` file, add this:
 ```javascript
 var offlineBtn = document.getElementById("js-offlinebtn")
@@ -799,7 +1019,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 ```
 Explanation: We get the 'You are online' button, and we change its background color, border color, as well as its text when you hover on it. When you remove the mouse, things get back to normal.
 
-Now, let's style the state button by adding this code to ```app/assets/stylesheets/home.scss``` file, inside the nav-link section, just below the ```&.signup-btn :
+Now, let's style the state button by adding this code to ```app/assets/stylesheets/home.scss``` file, inside the nav-link section, just below ```&.signup-btn``` :
 ```css
 &.state-btn {
     border-color: $greenColor;
@@ -835,8 +1055,28 @@ The nav-link section should now look like this
 ```
 Now if you test the app, you will see that everything is working fine. 
 
-Next, we are nwo going to add realtime update to the appearance dot everytime a developer's state changes. This means that when a developer goes online, all the developers that are logged in will see the appearance dot on that developer's card change from red to green, and from green to red when the developer goes offline.
-To do this, we are going to use action cable. First, let's create an appearance channel. Run this code in your terminal:
+
+
+
+
+
+
+
+                                         GIF
+
+
+
+
+
+
+
+
+
+
+  ###### VIII- 2. Realitme updates for state changes using action cable
+
+Next, we are now going to add realtime updates to the appearance dot(the icon next to the dev's name) everytime a developer's state changes. This means that when a developer goes online, all the developers that are logged in will see the appearance dot on that developer's card change from red to green, and from green to red when the developer goes offline.
+To do this, we are going to use action cable. First, let's create an ```appearance``` channel. Run this code in your terminal:
 ```terminal
 rails g channel appearance
 ```
@@ -905,7 +1145,6 @@ This broadcast is going to be received by the ```received``` function of our ```
 ```javascript
 //=================== IF THE USER IS ONLINE ============================//////////////
 if (data['state'] === "online") {
-  console.log(data['user_id']);
   var dot = document.getElementById("js-appearance" + data['user_id']);
   //var user_state = document.getElementById("user-state" + data['user_id']);
   var camera_icon = document.getElementById("js-camera-icon" + data['user_id']);
@@ -913,13 +1152,12 @@ if (data['state'] === "online") {
     dot.classList.remove("offline");
     dot.classList.add("online");
     camera_icon.classList.remove("offline");
+    camera_icon.classList.add("online");
   }
-  console.log(dot);
   
   
   //===================== IF THE USER IS OFFLINE =========================///////////////
 } else if (data['state'] === "offline" ) { // e.g: the user logged out
-  console.log(data['user_id']);
   var offDot = document.getElementById("js-appearance" + data['user_id']);
   var offCameraIcon = document.getElementById("js-camera-icon" + data['user_id']);
   if (offDot !== null && offCameraIcon !== null) {
@@ -929,16 +1167,38 @@ if (data['state'] === "online") {
     offCameraIcon.classList.add("offline");
         
   }
-  console.log(dot);
+  
 }
 ```
-Explanation: When we receive the broadcast signal and the data sent in our ```broadcast_change_to_users``` method, we first check the developer's state. If the developer is went online, we simply display the camera icon on his card and we also change the color of its appearance dot from red to green. If the developer went offline, we hide the camera icon on his card, and we change the color of its appearance dot from green to red.
+Explanation: When we receive the broadcast signal and the data sent in our ```broadcast_change_to_users``` method, we first check the developer's state. If the developer is online, we simply display the camera icon on his card and we also change the color of its appearance dot from red to green. If the developer is offline, we hide the camera icon on his card, and we change the color of its appearance dot from green to red.
 
 Now if you test our feature, you will see that it works perfectly.
 
 
-### Building the video call feature using the opentok platform
 
+
+
+
+
+
+
+                                              GIF
+
+
+
+
+
+
+
+
+
+
+
+
+### IX- Building the video call feature using the opentok platform
+
+  ###### IX- 1. Creating the modals
+  
 Now we can start building the main feature of our app. To do that, we are going to use the opentok platform. 
 OpenTok is the leading WebRTC platform for interactive video, enabling voice, video and messaging for mobile and web with our Live Video API. 
 Let's start by adding the bootstrap modals. Create the following files in your views folder:
@@ -1033,6 +1293,7 @@ Now that we have our three modals, we need to render them in our `app/views/layo
 <%= render 'home/partials/modals/session_modal' %>
 ```
 Then, let's go to our `app/assets/stylesheets/home.scss` file and add some styles to our modals.
+
 ###### `app/assets/stylesheets/home.scss`
 ```css
 //===================== Modal =============================
