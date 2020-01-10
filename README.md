@@ -97,7 +97,7 @@ gem 'devise'
 Then run ```bundle install```.
 Next, run the generator:
 ```terminal
-rails generate devise:install (Follow instructions)
+rails generate devise:install
 ```
 Generate devise views by running: ```rails g devise:views```.
 
@@ -247,6 +247,37 @@ Do the same with ```views/devise/sessions/new.html.erb``` by replacing its conte
     </div>
 </div>
 ```
+For our signup form to work properly, we need to add some javascript. create a ```script.js``` file in your ```app/javascript/packs``` folder.
+For that file to be run by webpacker, let's import it by adding ```import './script.js'``` in our ```app/javascript/packs/application.js``` file. Now add this code to our ```script.js``` file:
+```javascript
+document.addEventListener('DOMContentLoaded', (event) => {
+
+  /* Avatar upload functionality for user registration */
+  var readURL = function(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('.profile-pic').attr('src', e.target.result);
+            }
+    
+            reader.readAsDataURL(input.files[0]);
+        }
+  }
+   
+  $(".file-upload").on('change', function(){
+      readURL(this);
+  });
+    
+  $(".upload-button").on('click', function() {
+      $(".file-upload").click();
+  });
+  
+})
+```
+###### ```Explanation```
+In the code above, we listen for changes on the file input field, and when a file is selected, we read it using the FileReader api, then we change ```src``` attribute of the image tag by the file url. See https://developer.mozilla.org/en-US/docs/Web/API/FileReader .
+
 Now we need to whitelist those new attributes. To do that, we are going to create our own ```registrations``` controller. In ```app/controllers```, create ```registrations_controller.rb``` and add this code:
 ```ruby
 class RegistrationsController < Devise::RegistrationsController
@@ -268,7 +299,7 @@ We did the same thing for the ```account_update_params``` method, although we ar
 
 Now we need to instruct rails to use our newly created ```registrations``` controller, not devise's registrations controller. We can do that ```config/routes.rb``` by replacing ```devise_for :users``` with ```devise_for :users, controllers: { registrations: "registrations" }```.
 
-### IV- Initializing active storage
+### IV- Initializing Active Storage
 
 Since we are going to be working with images, let's go ahead and initialize active storage by running ```rails active_storage:install``` and then ```rails db:migrate```. 
 Now, add this to your ```models/user.rb``` file:
@@ -403,10 +434,6 @@ Create the ```home/partials/nav/_dropdown.html.erb``` file and add the following
     </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <%= link_to 'Logout', logout_path, class: 'dropdown-item', method: :delete %>
-            <a class="dropdown-item" href="#">Action</a>
-            <a class="dropdown-item" href="#">Another action</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">Something else here</a>
         </div>
 </li>
 ```
@@ -430,12 +457,14 @@ Next, create ```home/partials/nav/dropdown/_gofflinebtn.html.erb``` and ```home/
 Then create the ```home/partials/nav/_auth_links.html.erb``` for when the user is not logged in. Add the following code to it:
 ```html
 <li class="nav-item">
-    <%= link_to 'Sign Up', register_path, class: 'nav-link signup-btn btn btn-success py-1 mx-3' %>
+    <%= link_to 'Sign Up', register_path, class: 'nav-link signup-btn btn btn-success py-1 mx-3', data: {turbolinks: false} %>
 </li>
 <li class="nav-item">
     <%= link_to 'Log In', login_path, class: 'nav-link mx-3' %>
 </li>
 ```
+On the signup link, we disabled turbolinks with ```data: {turbolinks: false}``` because we don't want rails to use ajax to get to the signup page. if we don't do that, users will not be able to upload a picture when signing up (because our javascript code will not run).
+
 Now when you go to ```localhost:3000```, you can see our navbar.
 
 
@@ -990,35 +1019,33 @@ onBtn.classList.add("d-none")
 
 var offlineBtn = document.getElementById("js-offlinebtn")
 offBtn.classList.remove("d-none")
-
 ```
 Explanation: Here, in the ```views/home/online.js.erb``` file, we are just hiding the 'Go online' button to display the 'You are online' button. and in the ```views/home/offline.js.erb``` file, we are hiding the 'You are online' button to display the 'Go online' button.
 
-If you test the app, you can see that it's effectively changing the developer's state when you click on the button. But there's one thing that we need to add. When the developer hovers on the 'You are online' button, we want that button to turn red, and the text to say 'Go offline'. To do that, let's create a script.js file in our ```app/javascript/packs``` folder.
-For that file to be run by webpacker, let's import it by adding ```import './script.js'``` in our ```app/javascript/packs/application.js``` file.
+If you test the app, you can see that it's effectively changing the developer's state when you click on the button. But there's one thing that we need to add. When the developer hovers on the 'You are online' button, we want that button to turn red, and the text to say 'Go offline'. 
 In our ```app/javascript/packs/script.js``` file, add the following code:
 ```javascript
-document.addEventListener('DOMContentLoaded', (event) => {
-  /* Change the background color and innerHTML when the online button is hovered */
-  const onlineBtn = document.getElementById('js-onlinebtn')
-  if( onlineBtn !== null) {
 
-      onlineBtn.addEventListener('mouseover', (event) => {
-          onlineBtn.style.backgroundColor = "red"
-          onlineBtn.style.borderColor = "red"
-          onlineBtn.innerHTML = "Go offline"
+...
 
-      })
+/* Change the background color and innerHTML when the online button is hovered */
+const onlineBtn = document.getElementById('js-onlinebtn')
+if( onlineBtn !== null) {
 
-      onlineBtn.addEventListener('mouseout', (event) => {
-          onlineBtn.style.backgroundColor = "#3DC794"
-          onlineBtn.style.borderColor = "#3DC794"
-          onlineBtn.innerHTML = "You are online"
+    onlineBtn.addEventListener('mouseover', (event) => {
+        onlineBtn.style.backgroundColor = "red"
+        onlineBtn.style.borderColor = "red"
+        onlineBtn.innerHTML = "Go offline"
 
-      })
-  }
-})
+    })
 
+    onlineBtn.addEventListener('mouseout', (event) => {
+        onlineBtn.style.backgroundColor = "#3DC794"
+        onlineBtn.style.borderColor = "#3DC794"
+        onlineBtn.innerHTML = "You are online"
+
+    })
+}
 ```
 Explanation: We get the 'You are online' button, and we change its background color, border color, as well as its text when you hover on it. When you remove the mouse, things get back to normal.
 
@@ -1078,7 +1105,7 @@ Now if you test the app, you will see that everything is working fine.
 
   ###### VIII- 2. Realitme updates for state changes using action cable
 
-Next, we are now going to add realtime updates to the appearance dot(the icon next to the dev's name) everytime a developer's state changes. This means that when a developer goes online, all the developers that are logged in will see the appearance dot on that developer's card change from red to green, and from green to red when the developer goes offline.
+We are now going to add realtime updates to the appearance dot(the icon next to the dev's name) everytime a developer's state changes. This means that when a developer goes online, all the developers that are logged in will see the appearance dot on that developer's card change from red to green, and from green to red when the developer goes offline.
 To do this, we are going to use action cable. First, let's create an ```appearance``` channel. Run this code in your terminal:
 ```terminal
 rails g channel appearance
