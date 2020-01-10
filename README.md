@@ -312,7 +312,7 @@ has_one_attached :avatar
   ###### V- 1. Developers section
 
 We can finally start building our home page. 
-Go to ```views/home/index.html.erb``` file and add the following code.
+Go to ```views/home/index.html.erb``` file and add the following code after deleting the content of that file.
 ```html
 <%= render 'home/partials/nav' %>
   
