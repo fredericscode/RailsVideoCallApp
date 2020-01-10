@@ -130,11 +130,11 @@ And go to ```app/views/devise/shared/_links.html.erb``` and change this:
 to this:
 ```html
 <%- if controller_name != 'sessions' %>
-  <%= link_to "Log in", login_path %><br />
+  <%= link_to "Log in", login_path(resource_name) %><br />
 <% end %>
 
 <%- if devise_mapping.registerable? && controller_name != 'registrations' %>
-  <%= link_to "Sign up", register_path %><br />
+  <%= link_to "Sign up", register_path(resource_name) %><br />
 <% end %>
 ```
 Now you can go to ```/login``` and ```/register``` to get to your login and register pages respectively.
