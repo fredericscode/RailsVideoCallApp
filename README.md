@@ -363,7 +363,7 @@ end
 If there's a signed in user, we get all the users in the dabatase except that user.
 
 
-We also need to create a partial to display each user. Create ```views/home/partials/_user-card.html``` file and add the following code:
+We also need to create a partial to display each user. Create ```views/home/partials/_user-card.html.erb``` file and add the following code:
 ```html
 <div class="dev-card p-3 my-3 text-center">
     <% if user.avatar.attached? %>
