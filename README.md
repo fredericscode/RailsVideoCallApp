@@ -1225,6 +1225,49 @@ Now if you test our feature, you will see that it works perfectly.
 
 
 
+  ###### VIII- 3. Getting users offline when they log out
+
+At this time, when a user is "online" and logs out, he remains "online" and other developers can see that. We don't want that. We need to make sure the user gets "offline" when logging out. To do that, we are going to extend the ```Devise::SessionsController``` by creating our own and modify the destroy method. Create a ```sessions_controller.rb``` file inside your ```app/controllers``` folder. Add this code inside that file:
+```ruby
+class SessionsController < Devise::SessionsController
+  
+  def destroy
+       
+       if current_user.online?
+         current_user.offline!
+         broadcast_change_to_users("offline")
+       end
+
+       super
+  end
+  
+  private
+
+  def broadcast_change_to_users(state)
+      ActionCable.server.broadcast(
+        "appearance",
+        state: state,
+        user_id: current_user.id
+      )
+  end
+  
+end
+```
+###### ```Explanation```
+In the ```destroy``` method, we first get the user offline (If he/she is not already). Then, just like we did on our ```home_controller```, we broadcast the change to other users.
+
+Next, we need rails to use our sessions controller, not devise's sessions controller. Go to your ```routes.rb``` file and change this:
+```ruby
+devise_for :users, controllers: { registrations: "registrations" }
+```
+To this: 
+```ruby
+devise_for :users, controllers: { registrations: "registrations", sessions: "sessions" }
+```
+Finally, in the same file, change ```delete 'logout', to: 'devise/sessions#destroy'``` with ```delete 'logout', to: 'sessions#destroy'```.
+Great! now, everything is working as expected.
+
+
 ### IX- Building the video call feature using the opentok platform
 
   ###### IX- 1. Creating the modals
