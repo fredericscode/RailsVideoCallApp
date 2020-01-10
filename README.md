@@ -130,11 +130,11 @@ And go to ```app/views/devise/shared/_links.html.erb``` and change this:
 to this:
 ```html
 <%- if controller_name != 'sessions' %>
-  <%= link_to "Log in", login_path(resource_name) %><br />
+  <%= link_to "Log in", login_path %><br />
 <% end %>
 
 <%- if devise_mapping.registerable? && controller_name != 'registrations' %>
-  <%= link_to "Sign up", register_path(resource_name) %><br />
+  <%= link_to "Sign up", register_path %><br />
 <% end %>
 ```
 Now you can go to ```/login``` and ```/register``` to get to your login and register pages respectively.
@@ -450,7 +450,7 @@ enum state: { offline: 0, online: 1 }
 ###### ```Explanation```
 This adds ```online``` and ```offline``` methods to our user model. We can now use ```user.online!``` and ```user.offline!``` to change the user's state (0 to 1, or 1 to 0), but we can also use ```user.online?``` and ```user.offline?``` to check if the user is online or offline. 
 
-Next, create ```home/partials/nav/dropdown/_gofflinebtn.html.erb``` and ```home/partials/nav/dropdown/_gonlinebtn.html.erb``` (leave them empty for now) and run the server.
+Next, create ```home/partials/nav/dropdown/_gofflinebtn.html.erb``` and ```home/partials/nav/dropdown/_gonlinebtn.html.erb``` (leave them empty for now).
 
 
 
@@ -581,7 +581,9 @@ Go to ```home/partials/_header.html.erb``` and add this:
     <img class="header-image d-none d-md-block mt-3" src="<%= image_path('Workathome.png') %>" alt="">
 </div>
 ```
-Define the ```btnStart``` method in ```helpers/home_helper.rb```:
+Notice the image that we added at the bottom of the code above? You can get the same at https://usesmash.com for free and add it inside your ```assets/images``` folder.
+
+Now, define the ```btnStart``` method in ```helpers/home_helper.rb```:
 ```ruby
 def btnStart
     if user_signed_in?
@@ -600,6 +602,23 @@ And in the ```home/partials/startbtn/_authbtn.html.erb``` file, add this:
 ```html
 <%= link_to 'Start now', login_path, class: 'start-btn btn btn-success mr-1', id: 'js-start-btn-auth' %>
 ```
+###### ```Explanation```
+If the user is signed in, we want to display a 'start' button that is going to scroll down to the developers section when clicked (_scroolbtn.html.erb). 
+When the user is not signed in, clicking on the start button is going to redirect that user to the login page.
+
+Now, add this javascript code to handle the scrolling effect. Go to your ```app/javascript/script.js``` file and add this code: 
+```javascript
+/* Scroll to the developers section when the start button is clicked */
+  const startBtn = document.getElementById('js-start-btn')
+  const devSection = document.getElementById('js-developers')
+  if (startBtn !== null) {
+    startBtn.addEventListener('click', (event) => {
+      event.preventDefault()
+      devSection.scrollIntoView({behavior: 'smooth', block: 'start'})
+    })
+  }
+```
+
 
 Let's also style our auth pages, our header and the developers section. Add the following code to ```app/assets/stylesheets/home.scss```:
 ```css
@@ -815,32 +834,11 @@ Let's also style our auth pages, our header and the developers section. Add the 
   }
 }//========================== Auth form =====================
 ```
-Now our home page looks beautiful.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ### VI- Styling Devise notifications with Bootstrap
 
-Devise alerts are really ugly, let's make them look good. First, go to your ```app/views/layouts/application.html.erb``` file and add this code right below the opening tag of the body element:
+Devise alerts are really ugly, let's make them look good. First, go to your ```app/views/layouts/application.html.erb``` file and add this code right below the opening tag of the body element (delete the default devise alerts first):
 ```html
 <!-- Devise notification styled with bootstrap -->
 <% if notice %>
@@ -869,7 +867,7 @@ Then, go to your ```app/assets/stylesheets/home.scss``` and add this:
   }
 }// ========= Bootstrap notification ==========
 ```
-That's it!!! Now whenever a user logs in, registers or logs out, you have beautiful notifications displayed on top of the navbar.
+That's it!!! Now our home, login and register pages are looking good. But we can't register because we haven't implemented image upload functionality.
 
 
 
@@ -896,9 +894,12 @@ That's it!!! Now whenever a user logs in, registers or logs out, you have beauti
 ### VII- Image upload on AWS S3
 
 Now is time to allow users to choose a profile picture and upload it to aws using active storage.
-First, go to ```config/environments/development.rb``` and change ```config.active_storage.service = :local``` to ```config.active_storage.service = :amazon```. Then, uncomment the amazon section in your ```config/storage.yml``` and add your AWS S3 credentials.
+First, go to ```config/environments/development.rb``` and change ```config.active_storage.service = :local``` to ```config.active_storage.service = :amazon```. 
+
+You can use rails credentials to store keys, but I prefer to store mine inside environment variables
+
+Uncomment the amazon section in your ```config/storage.yml``` and add your AWS S3 credentials like this:
 ```yml
-# Use rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
 amazon:
   service: S3
   access_key_id: <%= ENV["ACCESS_KEY_ID"] %>
@@ -906,14 +907,13 @@ amazon:
   region: your_region
   bucket: you_bucket
 ```
-To secure your credentials, you can use rails credentials to store them, but I prefer to store mine inside environment variables. To do that, let's create a ```config/local_env.yml``` file. And inside that file, we are going to store our credentials like this:
+Let's create a ```config/local_env.yml``` file. And inside that file, we are going to store our credentials like this:
 ```yml
 AWS_ACCESS_KEY_ID: 'my_access_key_id'
 AWS_SECRET_ACCESS_KEY: 'my_secret_access_key'
 ```
 
-After setting our variables, we have to set those env variables into config/application.rb file.
-In the config/application.rb file, add the below code:
+ Now, let's store those credentials inside environment variables. In the config/application.rb file, add the below code:
 ```ruby
 config.before_configuration do
   env_file = File.join(Rails.root, 'config', 'local_env.yml')
