@@ -393,6 +393,15 @@ We also need to create a partial to display each user. Create ```views/home/part
     </div>
 </div>
 ```
+To initialize the tooltip on our github and camera icons, go to your ```script.js``` file and add this: 
+```javascript
+/* Initialize tooltips */ 
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
+```
+That block of code is provided to us by bootstrap.
+
 
   ###### V- 2. Navbar section
   
@@ -1740,7 +1749,7 @@ Head back to the ```received``` function of our ```room_channel.js``` file and a
             console.log(`Another client connected. ${connectionCount} total.`);
           }
         },
-        connectionDestroyed: function connectionDestroyedHandler(event) {
+        connectionDestroyed: function connectionDestroyedHandler(event) { // When David hangs up, we end Alex's connection to the session and we hide his session window.
           connectionCount--;
           console.log(`A client disconnected. ${connectionCount} total.`);
           session.disconnect();
@@ -1770,7 +1779,8 @@ Head back to the ```received``` function of our ```room_channel.js``` file and a
           });
         }
       });
-
+      
+      / Whenever Alex clicks on the stopSessionBtn(the red camera icon on the session modal), we end his connection to the session and we hide his session modal.
       const stopSessionBtn = document.getElementById("stop-session");
       stopSessionBtn.addEventListener('click', (event)=> {
         event.preventDefault();
@@ -1820,7 +1830,7 @@ Head back to the ```received``` function of our ```room_channel.js``` file and a
         + event.reason);
       });
 
-      //When a stream, other than your own, leaves a session the Session
+      //When a stream, other than your own, leaves the Session
       session.on("streamDestroyed", function (event) {
         console.log("Stream stopped. Reason: " + event.reason);
       });
@@ -1832,7 +1842,7 @@ Head back to the ```received``` function of our ```room_channel.js``` file and a
             console.log(`Another client connected. ${connectionCount} total.`);
           }
         },
-        connectionDestroyed: function connectionDestroyedHandler(event) {
+        connectionDestroyed: function connectionDestroyedHandler(event) { // When Alex hangs up, we end David's connection to the session and we hide his session window.
           connectionCount--;
           console.log(`A client disconnected. ${connectionCount} total.`);
           session.disconnect();
@@ -1861,7 +1871,7 @@ Head back to the ```received``` function of our ```room_channel.js``` file and a
         }
       });
 	
-      // Whenever a user clicks on the user clicks on the stopSessionBtn(the red camera icon on the session modal), we end the connection to the session for both users (David and Alex)
+      // Whenever David clicks on the stopSessionBtn(the red camera icon on the session modal), we end his connection to the session and we hide his session modal.
       const stopSessionBtn = document.getElementById("stop-session");
       stopSessionBtn.addEventListener('click', (event)=> {
         event.preventDefault();
@@ -1889,7 +1899,7 @@ The screen-sharing functionality only works on https. So localhost:3000 is not g
 
 
 
-This is the end of our building process (at least for this version of the app) . I'll continue to update this app by adding new functionalities. You will get an email everytime there's a new version. Thank you for following along. See you next time.
+This is the end of our building process (at least for this version of the app) . I'll continue to update this app by adding new functionalities. You will get an email everytime there's a new version (free of charge if you already bought the first version). Thank you for following along. See you next time.
 
 
 
