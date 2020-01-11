@@ -95,7 +95,7 @@ If you go to ```localhost:3000```, you will see our home page.
 
 
 <p align="center">
-  <img width="600" height="500" src="https://github.com/fredericscode/VideoCall/blob/master/app/assets/images/Screen%20Shot%202020-01-10%20at%204.35.56%20PM.png">
+  <img src="https://github.com/fredericscode/VideoCall/blob/master/app/assets/images/Screen%20Shot%202020-01-10%20at%204.35.56%20PM.png">
 </p>
 
 
