@@ -1449,6 +1449,9 @@ Then, let's go to our `app/assets/stylesheets/home.scss` file and add some style
   }
 }//==================== Modal ============================
 ```
+  ###### IX- 2. Opentok Setup
+
+
 ###### NOTE: 
 David = the sender = the user initiating the call (the one that clicked the camera icon)
 Alex = the recipient = the user receiving the call
@@ -1470,10 +1473,12 @@ TOKBOX_API_KEY: '46438282'
 TOKBOX_SECRET_KEY: 'd30c34fae41b01bbbab32c88b0060bec3dbec319'
 ```
 
+  ###### IX- 3. Creating the room channel
 The next thing we need to do is to create a room channel:
 ```terminal
 rails g channel room
 ```
+  ###### IX- 4. Sending Incoming call notification 
 Then, go to your ```javascript/channels/room_channel.js``` and add the ```consumer.subscriptions.create("RoomChannel", {``` block in a constant like this:
 ```javascript
 const roomSubscriber = consumer.subscriptions.create("RoomChannel", {
@@ -1574,6 +1579,331 @@ def create_token(session_id)
 end
 
 ```
+As you can see above, we created an opentok instance, passing in the opentok credentials. We then used that instance to create a session with ```opentok.create_session``` (see https://tokbox.com/developer/guides/create-session/ruby/  ). We also generate a token for our session (see https://tokbox.com/developer/guides/create-token/ruby/ ). 
+Using ```ActionCable.server.broadcast```, we broadcast to ```room_#{recipient_id}``` (which means that only Alex will get this signal), passing in David's name, his id, the session_id and the ```step```.
+The step is very important because it's going to allow us to know what action is taking place(user receiving the call, broadcasting session to the recipient, or broadcasting session to the sender)
+
+
+To make this work, remove the content of your ```subscribed``` method and add this: 
+```ruby
+stream_from "room_#{current_user.id}"
+```
+also, add ```stop_all_streams``` to the ```unsubscribe``` method.
+
+Now let's head to our ```app/javascript/room_channel.js```. Inside the ```received``` function, add this: 
+
+```javascript
+if (data['step'] === 'receiving the call'){
+
+     var sender_first_name = data['sender_first_name'];
+     var sender_id = data['sender_id'];
+     var session_id = data['session_id'];
+     var session_id_modal = document.getElementById('session_id');
+     session_id_modal.innerHTML = session_id;
+     var sender_id_modal = document.getElementById('sender_id');
+     sender_id_modal.innerHTML = sender_id;
+     var sender_name_modal = document.getElementById('sender_name');
+     sender_name_modal.innerHTML = sender_first_name;
+     
+     // Display the receiver notification modal
+     $('#receiver-notif-modal').modal('show');
+
+}
+```
+###### ```Explanation```
+We get the ```step``` value is 'receiving the call', fill Alex's notification modal with David's name and id, then we display it to Alex.
+
+  
+  ###### IX- 5. Answering the call
+
+Now, we need to handle the second phase of our feature: answering the call. As you probably saw in the demo, when Alex receives the call (when the notif modal pops up), all he needs to do is click on the red camera icon to start the video session with David. To implement that part of the feature, let's add an event listener that red camera icon. In your ```script.js``` file, add this block of code: 
+```javascript
+// Call the answer method when the answer_btn is clicked.
+    const answerBtn = document.getElementById("answer-call");
+    answerBtn.addEventListener('click', (event) => {
+      event.preventDefault();
+      var session_id = document.getElementById("session_id").innerHTML;
+      var sender_id = document.getElementById('sender_id').innerHTML;
+      console.log(session_id);
+      console.log("answer btn clicked");
+      $('#receiver-notif-modal').modal('hide');
+      roomSubscriber.answer(session_id, sender_id);
+    });
+```
+###### ```Explanation```
+When the red camera icon is clicked, we hide the notification modal and we call the ```answer``` function on ```app/javascript/channels/room_channel.js```(not defined), passing the session_id and David's id as arguments. 
+
+Now, in ```app/javascript/channels/room_channel.js```, let's create the ```answer``` function below the ```call``` function:
+```javascript
+call(recipient_id, recipient_name) {
+	...
+}, // Don't forget this comma
+
+answer(session_id, sender_id) {
+    console.log(`Hello from the answer method: ${session_id}`);
+    return this.perform('answer', {
+        session_id: session_id,
+        sender_id: sender_id
+    });
+}
+```
+Just like in our ```call``` function, all we do here is calling the ```answer``` method on the server side. Let's create that method in our ```app/channels/room_channel.rb``` file.
+```ruby
+def answer(data)
+   session_id = data["session_id"]
+   sender_id = data["sender_id"]
+   broadcast_session_to_recipient(session_id)
+   broadcast_session_to_sender(session_id, sender_id)
+end
+```
+In the ```answer``` method, we broadcast the session to both David and Alex. Define ```broadcast_session_to_recipient``` and ```broadcast_session_to_sender``` methods in the ```private``` section:
+```ruby
+# Brodcast the session to the recipient
+  def broadcast_session_to_recipient(session_id)
+    token = create_token(session_id)
+    ActionCable.server.broadcast(
+      "room_#{current_user.id}",
+      apikey: api_key,
+      session_id: session_id,
+      token: token,
+      step: 'Broadcasting session to the recipient'
+    )
+  end
+
+  def broadcast_session_to_sender(session_id, sender_id)
+    token = create_token(session_id)
+    ActionCable.server.broadcast(
+      "room_#{sender_id}",
+      apikey: api_key,
+      session_id: session_id,
+      token: token,
+      step: 'Broadcasting session to the sender'
+    )
+  end
+```
+We now need these two steps ('Broadcasting session to the recipient' and 'Broadcasting session to the sender').
+Head back to the ```received``` function of our ```room_channel.js``` file and add this:
+```javascript
+
+// ============ BROADCASTING THE SESSION TO THE RECIPIENT.=====================================================
+    if (data['step'] === 'Broadcasting session to the recipient') {
+      console.log('Broadcasting the session to the recipient');
+      // Initialize the session
+      const session = OT.initSession(data['apikey'], data['session_id']);
+
+      // Initialize the publisher for the recipient
+      var publisherProperties = {insertMode: "append", width: '100%', height: '100%'};
+      const publisher = OT.initPublisher('publisher', publisherProperties, function (error) {
+        if (error) {
+          console.log(`Couldn't initialize the publisher: ${error}`);
+        } else {
+          console.log("Receiver publisher initialized.");
+        }
+      });
+      $('#session-modal').modal("show");
+
+      // Detect when new streams are created and subscribe to them.
+      session.on("streamCreated", function (event) {
+        console.log("New stream in the session");
+        var subscriberProperties = {insertMode: 'append', width: '100%', height: '100%'};
+        const subscriber = session.subscribe(event.stream, 'subscriber', subscriberProperties, function(error) {
+          if (error) {
+            console.log(`Couldn't subscribe to the stream: ${error}`);
+          } else {
+            console.log("Receiver subscribed to the sender's stream");
+          }
+        });
+      });
+
+      //When a stream you publish leaves a session, the Publisher object dispatches a streamDestroyed event:
+      publisher.on("streamDestroyed", function (event) {
+        console.log("The publisher stopped streaming. Reason: "
+        + event.reason);
+
+      });
+
+      //When a stream, other than your own, leaves a session, the Session object dispatches a streamDestroyed event:
+      session.on("streamDestroyed", function (event) {
+        console.log("Stream stopped. Reason: " + event.reason);
+      });
+
+
+      session.on({
+        connectionCreated: function (event) {
+          if (event.connection.connectionId != session.connection.connectionId) {
+            connectionCount++;
+            console.log(`Another client connected. ${connectionCount} total.`);
+          }
+        },
+        connectionDestroyed: function connectionDestroyedHandler(event) {
+          connectionCount--;
+          console.log(`A client disconnected. ${connectionCount} total.`);
+          session.disconnect();
+          $('#session-modal').modal('hide');
+
+
+        }
+      });
+
+      session.on("sessionDisconnected", function(event) {
+        console.log("The session disconnected. " + event.reason);
+      });
+
+      // Connect to the session
+      // If the connection is successful, publish an audio-video stream.
+      session.connect(data['token'], function(error) {
+        if (error) {
+          console.log("Error connecting to the session:", error.name, error.message);
+        } else {
+          console.log("Connected to the session.");
+          session.publish(publisher, function(error) {
+            if (error) {
+              console.log(`couldn't publish to the session: ${error}`);
+            } else {
+              console.log("The receiver is publishing a stream");
+            }
+          });
+        }
+      });
+
+      const stopSessionBtn = document.getElementById("stop-session");
+      stopSessionBtn.addEventListener('click', (event)=> {
+        event.preventDefault();
+        console.log("stop-session btn clicked");
+        session.disconnect();
+        $('#session-modal').modal('hide');
+
+      });
+
+
+    }
+
+// ============ BROADCASTING THE SESSION TO THE SENDER.=====================================================
+    if (data['step'] === 'Broadcasting session to the sender') {
+      console.log('Broadcasting the session to the sender');
+
+      // Initialize the session
+      const session = OT.initSession(data['apikey'], data['session_id']);
+      console.log(session);
+      $('#sender-notif-modal').modal("hide");
+      // Initialize the publisher for the sender
+      var publisherProperties = {insertMode: "append", width: '100%', height: '100%'};
+      const publisher = OT.initPublisher('publisher', publisherProperties, function (error) {
+        if (error) {
+          console.log(`Couldn't initialize the publisher: ${error}`);
+        } else {
+          console.log("Sender publisher initialized.");
+        }
+      });
+      $('#session-modal').modal("show");
+      // Detect when new streams are created and subscribe to them.
+      session.on("streamCreated", function (event) {
+        console.log("New stream in the session");
+        var subscriberProperties = {insertMode: 'append', width: '100%', height: '100%'};
+        const subscriber = session.subscribe(event.stream, 'subscriber', subscriberProperties, function(error) {
+          if (error) {
+            console.log(`Couldn't subscribe to the stream: ${error}`);
+          } else {
+            console.log("Sender subscribed to the receiver's stream");
+          }
+        });
+      });
+
+      //When a stream you publish leaves a session the Publisher object dispatches a streamDestroyed event:
+      publisher.on("streamDestroyed", function (event) {
+        console.log("The publisher stopped streaming. Reason: "
+        + event.reason);
+      });
+
+      //When a stream, other than your own, leaves a session the Session
+      session.on("streamDestroyed", function (event) {
+        console.log("Stream stopped. Reason: " + event.reason);
+      });
+
+      session.on({
+        connectionCreated: function (event) {
+          if (event.connection.connectionId != session.connection.connectionId) {
+            connectionCount++;
+            console.log(`Another client connected. ${connectionCount} total.`);
+          }
+        },
+        connectionDestroyed: function connectionDestroyedHandler(event) {
+          connectionCount--;
+          console.log(`A client disconnected. ${connectionCount} total.`);
+          session.disconnect();
+          $('#session-modal').modal('hide');
+        }
+      });
+
+      session.on("sessionDisconnected", function(event) {
+        console.log("The session disconnected. " + event.reason);
+      });
+
+      // Connect to the session
+      // If the connection is successful, publish an audio-video stream.
+      session.connect(data['token'], function(error) {
+        if (error) {
+          console.log("Error connecting to the session:", error.name, error.message);
+        } else {
+          console.log("Connected to the session.");
+          session.publish(publisher, function(error) {
+            if (error) {
+              console.log(`couldn't publish to the session: ${error}`);
+            } else {
+              console.log("The sender is publishing a stream");
+            }
+          });
+        }
+      });
+
+      const stopSessionBtn = document.getElementById("stop-session");
+      stopSessionBtn.addEventListener('click', (event)=> {
+        event.preventDefault();
+        console.log("stop-ssesion btn clicked");
+        session.disconnect();
+        $('#session-modal').modal('hide');
+
+
+
+      });
+
+    }
+```
+
+###### ```Explanation```
+I added comments to the code so you can understand it better. 
+
+Waouhh!!! that's a lot of code. But it's fairly self-explanatory. You can always check https://tokbox.com/developer/guides/ if there's something you still don't get.
+
+
+If you test the app, you'll see that every thing is working perfectly. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <p align="center">
   <img src="https://github.com/fredericscode/rails/blob/master/app/assets/images/Workathome.png">
