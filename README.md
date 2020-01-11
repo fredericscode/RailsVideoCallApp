@@ -905,7 +905,7 @@ That's it!!! Now our home, login and register pages are looking good. But we can
 ### VII- Image upload on AWS S3
 
 Now is time to allow users to choose a profile picture and upload it to aws using active storage.
-First, go to ```config/environments/development.rb``` and change ```config.active_storage.service = :local``` to ```config.active_storage.service = :amazon```. 
+First, go to ```config/environments/development.rb``` and change ```config.active_storage.service = :local``` to ```config.active_storage.service = :amazon```.  Do the same thing in ```config/environments/production.rb```.
 
 You can use rails credentials to store keys, but I prefer to store mine inside environment variables
 
