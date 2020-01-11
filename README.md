@@ -1458,6 +1458,7 @@ Then, let's go to our `app/assets/stylesheets/home.scss` file and add some style
   }
 }//==================== Modal ============================
 ```
+
   ###### IX- 2. Opentok Setup
 
 
@@ -1478,8 +1479,8 @@ Next, add the opentok client SDK in your ```application.html.erb``` file, just a
 ```
 Now just like we stored aws credentials, store your opentok credentials by adding them in your ```local_env.yml``` file like this:
 ```yml
-TOKBOX_API_KEY: '46438282'
-TOKBOX_SECRET_KEY: 'd30c34fae41b01bbbab32c88b0060bec3dbec319'
+TOKBOX_API_KEY: 'your_tokbox_api_key'
+TOKBOX_SECRET_KEY: 'your_toxbox_secret_key'
 ```
 
   ###### IX- 3. Creating the room channel
