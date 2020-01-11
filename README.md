@@ -993,20 +993,6 @@ Now our users can add a profile picture when signing up and that picture is goin
 
 
 
-
-                                                  GIF
-
-
-
-
-
-
-
-
-
-
-
-
 ### VIII- Building the online/offline feature using action cable
 
   ###### VIII- 1. Allowing developers to go from 'online' to 'offline'
@@ -1139,16 +1125,15 @@ The nav-link section should now look like this
 Now if you test the app, you will see that everything is working fine. 
 
 
+<p align="center">
+  <img src="https://github.com/fredericscode/VideoCall/blob/master/app/assets/images/Screen%20Shot%202020-01-10%20at%206.42.36%20PM.png">
+</p>
 
 
 
-
-
-
-                                         GIF
-
-
-
+<p align="center">
+  <img src="https://github.com/fredericscode/VideoCall/blob/master/app/assets/images/Screen%20Shot%202020-01-10%20at%206.42.55%20PM.png">
+</p>
 
 
 
