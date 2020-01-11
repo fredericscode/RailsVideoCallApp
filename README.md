@@ -1517,12 +1517,12 @@ Now, let's add event listeners to the camera icons. In your ```script.js``` file
         recipient_name_modal.innerHTML = recipient_name;
         $('#sender-notif-modal').modal('show');
 
-        roomSubscriber.call(recipient_id, recipient_name);
+        roomSubscriber.call(recipient_id);
       })
     }
 ```
 ###### ```Explanation```
-When David clicks on Alex's camera icon, the sender modal pops up, filled with Alex's name. Then, we call the ```call``` function of the ```roomSubscriber``` (not yet defined), passing Alex's name and id as arguments.
+When David clicks on Alex's camera icon, the sender modal pops up, filled with Alex's name. Then, we call the ```call``` function of the ```roomSubscriber``` (not yet defined), passing Alex's id as argument.
 
 
 Let's go ahead and create the ```call``` function. In your ```javascript/channels/room_channel.js``` file, add the call function right below the ```received``` function like this:
@@ -1535,8 +1535,7 @@ received(data) {
 
 call(recipient_id, recipient_name) {
     return this.perform('call', {
-      recipient_id: recipient_id,
-      recipient_name: recipient_name
+      recipient_id: recipient_id
     });
 }
 ```
@@ -1546,7 +1545,6 @@ In ```app/channels/room_channel.rb```, add this code below the unsubscribed meth
 ```ruby
 def call(data)
     recipient_id = data['recipient_id']
-    #recipient_name = data['recipient_name']
     @session = create_session
     session_id = @session.session_id
     broadcast_notif_to_recipient(recipient_id, session_id)
@@ -1781,7 +1779,7 @@ Head back to the ```received``` function of our ```room_channel.js``` file and a
         }
       });
       
-      / Whenever Alex clicks on the stopSessionBtn(the red camera icon on the session modal), we end his connection to the session and we hide his session modal.
+      // Whenever Alex clicks on the stopSessionBtn(the red camera icon on the session modal), we end his connection to the session and we hide his session modal.
       const stopSessionBtn = document.getElementById("stop-session");
       stopSessionBtn.addEventListener('click', (event)=> {
         event.preventDefault();
@@ -1801,7 +1799,10 @@ Head back to the ```received``` function of our ```room_channel.js``` file and a
       // Initialize the session
       const session = OT.initSession(data['apikey'], data['session_id']);
       console.log(session);
+      
+      // Hide the modal
       $('#sender-notif-modal').modal("hide");
+      
       // Initialize the publisher for the sender
       var publisherProperties = {insertMode: "append", width: '100%', height: '100%'};
       const publisher = OT.initPublisher('publisher', publisherProperties, function (error) {
@@ -1811,7 +1812,10 @@ Head back to the ```received``` function of our ```room_channel.js``` file and a
           console.log("Sender publisher initialized.");
         }
       });
+      
+      // Show the session modal
       $('#session-modal').modal("show");
+      
       // Detect when new streams are created and subscribe to them.
       session.on("streamCreated", function (event) {
         console.log("New stream in the session");
@@ -1900,7 +1904,12 @@ The screen-sharing functionality only works on https. So localhost:3000 is not g
 
 
 
-This is the end of our building process (at least for this version of the app) . I'll continue to update this app by adding new functionalities. You will get an email everytime there's a new version (free of charge if you already bought the first version). Thank you for following along. See you next time.
+This is the end of our building process (at least for this version of the app) . I'll continue to update this app by adding new functionalities. You will get an email everytime there's a new version (free of charge if you already bought the first version). You can get the full code for this project at https://github.com/fredericscode/Final .
+
+
+Email me at fredericscode@gmail.com if you have any question.
+
+Thank you for following along. See you next time.
 
 
 
