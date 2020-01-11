@@ -1682,6 +1682,11 @@ In the ```answer``` method, we broadcast the session to both David and Alex. Def
   end
 ```
 We now need these two steps ('Broadcasting session to the recipient' and 'Broadcasting session to the sender').
+
+
+  ###### IX- 6. Connecting to the session - disconnecting from the session
+  
+  
 Head back to the ```received``` function of our ```room_channel.js``` file and add this:
 ```javascript
 
@@ -1855,7 +1860,8 @@ Head back to the ```received``` function of our ```room_channel.js``` file and a
           });
         }
       });
-
+	
+      // Whenever a user clicks on the user clicks on the stopSessionBtn(the red camera icon on the session modal), we end the connection to the session for both users (David and Alex)
       const stopSessionBtn = document.getElementById("stop-session");
       stopSessionBtn.addEventListener('click', (event)=> {
         event.preventDefault();
@@ -1876,10 +1882,14 @@ I added comments to the code so you can understand it better.
 Waouhh!!! that's a lot of code. But it's fairly self-explanatory. You can always check https://tokbox.com/developer/guides/ if there's something you still don't get.
 
 
-If you test the app, you'll see that every thing is working perfectly. 
+If you test the app, you'll see that everything is working perfectly. 
+
+###### NOTE:
+The screen-sharing functionality only works on https. So localhost:3000 is not going to work. Deploy your app to Heroku to use the screen-sharing functionality. Don't forget to add your opentok credentials in your Heroku app's ```config vars```.
 
 
 
+This is the end of our building process (at least for this version of the app) . I'll continue to update this app by adding new functionalities. You will get an email everytime there's a new version. Thank you for following along. See you next time.
 
 
 
