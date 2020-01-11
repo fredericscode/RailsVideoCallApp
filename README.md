@@ -6,7 +6,7 @@ Thank you for getting this ebook. In this tutorial, we are going to build a face
 
 To build this app, you'll need a few things:
 
-- ruby 2.7.0 and rails 6.0.2.1 (Those are the versions I'm using for this tutorial)
+- Ruby 2.7.0 and Rails 6.0.2.1 (Those are the versions I'm using for this tutorial)
 - AWS credentials (access_key_id and secret_access_key)
 - AWS S3 bucket
 - Tokbox account (Opentok is Tokbox's WebRTC Platform)
