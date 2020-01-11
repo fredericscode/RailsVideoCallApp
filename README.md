@@ -1899,6 +1899,36 @@ Waouhh!!! that's a lot of code. But it's fairly self-explanatory. You can always
 
 If you test the app, you'll see that everything is working perfectly. 
 
+Finally, let's add some media queries in our ```home.scss``` file to make our app look good on smaller devices.
+
+###### ```home.scss```
+```css
+/*================================= MEDIA QUERIES ==============================*/
+
+@media (max-width: 800px) {
+
+  .navbar-nav .state-btn {
+     margin: 5px 0px;
+  }
+
+  .jumbotron {
+    text-align: center;
+    h1 {
+      font-size: 28px;
+      width: 100%;
+    }
+    p {
+      font-size: 14px;
+      width: 100%;
+    }
+  }
+  
+
+}
+```
+
+
+
 ###### NOTE:
 The screen-sharing functionality only works on https. So localhost:3000 is not going to work. Deploy your app to Heroku to use the screen-sharing functionality. Don't forget to add your opentok credentials in your Heroku app's ```config vars```.
 
