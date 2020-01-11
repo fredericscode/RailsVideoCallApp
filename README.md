@@ -505,7 +505,9 @@ Now when you go to ```localhost:3000```, you can see our navbar.
 
 
 
-
+<p align="center">
+  <img src="https://github.com/fredericscode/VideoCall/blob/master/app/assets/images/Screen%20Shot%202020-01-10%20at%205.14.56%20PM.png">
+</p>
 
 
 
@@ -579,6 +581,9 @@ Now our navbar is exactly the way we want it to be.
 
 
 
+<p align="center">
+  <img src="https://github.com/fredericscode/VideoCall/blob/master/app/assets/images/Screen%20Shot%202020-01-10%20at%205.18.13%20PM.png">
+</p>
 
 
 
@@ -906,6 +911,21 @@ That's it!!! Now our home, login and register pages are looking good. But we can
 
 
 
+
+
+
+<p align="center">
+  <img src="https://github.com/fredericscode/VideoCall/blob/master/app/assets/images/Screen%20Shot%202020-01-10%20at%205.46.03%20PM.png">
+</p>
+
+
+<p align="center">
+  <img src="https://github.com/fredericscode/VideoCall/blob/master/app/assets/images/Screen%20Shot%202020-01-10%20at%205.46.20%20PM.png">
+</p>
+
+<p align="center">
+  <img src="https://github.com/fredericscode/VideoCall/blob/master/app/assets/images/Screen%20Shot%202020-01-10%20at%205.46.35%20PM.png">
+</p>
 
 
 
