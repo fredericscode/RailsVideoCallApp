@@ -1,4 +1,4 @@
-<h2>How to build a live, face-to-face video chat app in Ruby on Rails 6.0.2.1</h2>
+<h1>How to build a live, face-to-face video chat app in Ruby on Rails 6.0.2.1</h1>
 
 
 ####                              DISCLAIMER: This tutorial is not for beginners. 
