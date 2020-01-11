@@ -1,5 +1,23 @@
 <h2>How to build a live, face-to-face video chat app in Ruby on Rails 6.0.2.1</h2>
 
+####                              DISCLAIMER: This tutorial is not for beginners. 
+
+Thank you for getting this ebook. In this tutorial, we are going to build a face-to-face video chat app in ruby on rails. I decided to build this app because I was not interested in building another blog or todoapp - There are plenty of those out there. I wanted something unique to share with you. That's why I spend quite some time building this app, styling it to make it look good, appealing. 
+
+To build this app, you'll need a few things:
+
+- ruby 2.7.0 and rails 6.0.2.1 (Those are the versions I'm using for this tutorial)
+- AWS credentials (access_key_id and secret_access_key)
+- AWS S3 bucket
+- Tokbox account (Opentok is Tokbox's WebRTC Platform)
+- Tokbox credentials (api_key and secret_key)  https://tokbox.com/ (you get $10 credit to try it out)
+
+
+
+###                                               Let's code
+
+
+
 The first thing you'll need to do is to create the ruby on rails app using the rails command:
 
 ```terminal
@@ -10,7 +28,7 @@ The command above will create the application, install all the default gems, and
 Next create a database by running ```rails db:create```.
 
 
-### I- Installing Bootstrap 4, adding Font Awesome and Google Fonts
+###                      I- Installing Bootstrap 4, adding Font Awesome and Google Fonts
 
 First, let's add bootstrap to our project. Go to the ```views/layouts/application.html.erb``` file and add the bootstrap cdn link in the head tag:
 
@@ -38,6 +56,8 @@ Don't forget to add bootstrap javascript links at the bottom of your file. Right
       <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
       <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
  ```
+ 
+ 
 
 The next thing we're going to do is to create a Controller, an action and a template file to display our home page. 
 
@@ -74,7 +94,9 @@ If you go to ```localhost:3000```, you will see our home page.
 
 
 
-
+<p align="center">
+  <img width="600" height="500" src="https://github.com/fredericscode/VideoCall/blob/master/app/assets/images/Screen%20Shot%202020-01-10%20at%204.35.56%20PM.png">
+</p>
 
 
 
