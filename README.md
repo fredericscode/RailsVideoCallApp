@@ -1003,7 +1003,7 @@ def offline
     end
 end
 ```
-Explanation: In the online action, we just change the developer's state to 'online' with ```current_user.online```. After that, since it's an ajax request(remote), we respond with javascript format, which means that Rails is going to look for a ```views/home/online.js.erb``` file and run it. Same for the offline method, Rails is going to look for and run a ```views/home/offline.js.erb```. Let's create those two files.
+Explanation: In the online action, we just change the developer's state to 'online' with ```current_user.online```. After that, since it's an ajax request(remote), we respond with javascript format, which means that Rails is going to look for a ```views/home/online.js.erb``` file and run it. Same for the offline method, Rails is going to look for and run a ```views/home/offline.js.erb```. Create those two files.
 In the ```views/home/online.js.erb``` file, add this:
 ```javascript
 var offlineBtn = document.getElementById("js-offlinebtn")
@@ -1015,10 +1015,10 @@ onlineBtn.classList.remove("d-none")
 And in the ```views/home/offline.js.erb``` file, add this:
 ```javascript
 var onlineBtn = document.getElementById("js-onlinebtn")
-onBtn.classList.add("d-none")
+onlineBtn.classList.add("d-none")
 
 var offlineBtn = document.getElementById("js-offlinebtn")
-offBtn.classList.remove("d-none")
+offlineBtn.classList.remove("d-none")
 ```
 Explanation: Here, in the ```views/home/online.js.erb``` file, we are just hiding the 'Go online' button to display the 'You are online' button. and in the ```views/home/offline.js.erb``` file, we are hiding the 'You are online' button to display the 'Go online' button.
 
@@ -1178,7 +1178,7 @@ if (data['state'] === "online") {
   var dot = document.getElementById("js-appearance" + data['user_id']);
   //var user_state = document.getElementById("user-state" + data['user_id']);
   var camera_icon = document.getElementById("js-camera-icon" + data['user_id']);
-  if (dot != null && camera_icon != null) { // This values are null for the current_user
+  if (dot !== null && camera_icon !== null) { // This values are null for the current_user (the user that went online)
     dot.classList.remove("offline");
     dot.classList.add("online");
     camera_icon.classList.remove("offline");
