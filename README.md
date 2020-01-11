@@ -1247,20 +1247,7 @@ Now if you test our feature, you will see that it works perfectly.
 
 
 
-
-
-
-                                              GIF
-
-
-
-
-
-
-
-
-
-NOTE: If you deploy the application to heroku, don't forget to add the REDIS_TO_GO addon in your app, the copy the REDISTOGO_URL and save it as an environment variable in your ```local_env.yml```, just below your AWS credentials:
+NOTE: If you deploy the application to heroku, don't forget to add the REDIS_TO_GO addon in your app, then copy the REDISTOGO_URL and save it as an environment variable in your ```local_env.yml```, just below your AWS credentials:
 ```yml
 REDISTOGO_URL: 'redis://redistogo:55cea217e43f8912c561f0cc3247ff48@hammerjaw.redistogo.com:11969/'
 ```
@@ -1272,7 +1259,7 @@ production:
   url: <%= ENV["REDISTOGO_URL"] %>
   channel_prefix: Final_production
 ```
-Also, sometimes you may get broken images on heroku. To fix that, go to your ```config/environment/production.rb``` and set t ```config.assets.compile``` to true.
+Also, sometimes you may get broken images on heroku. To fix that, go to your ```config/environment/production.rb``` and set ```config.assets.compile``` to true.
 
 
 
@@ -1975,26 +1962,6 @@ Thank you for following along. See you next time.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<p align="center">
-  <img src="https://github.com/fredericscode/rails/blob/master/app/assets/images/Workathome.png">
-</p>
 
 
 
