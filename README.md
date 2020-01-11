@@ -1,5 +1,6 @@
 <h2>How to build a live, face-to-face video chat app in Ruby on Rails 6.0.2.1</h2>
 
+
 ####                              DISCLAIMER: This tutorial is not for beginners. 
 
 Thank you for getting this ebook. In this tutorial, we are going to build a face-to-face video chat app in ruby on rails. I decided to build this app because I was not interested in building another blog or todoapp - There are plenty of those out there. I wanted something unique to share with you. That's why I spend quite some time building this app, styling it to make it look good, appealing. 
@@ -12,6 +13,7 @@ To build this app, you'll need a few things:
 - Tokbox account (Opentok is Tokbox's WebRTC Platform)
 - Tokbox credentials (api_key and secret_key)  https://tokbox.com/ (you get $10 credit to try it out)
 
+You can find the demo of this app here: https://youtu.be/WXouJ8w7rQg
 
 
 ###                                               Let's code
