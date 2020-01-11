@@ -1712,6 +1712,8 @@ We now need these two steps ('Broadcasting session to the recipient' and 'Broadc
 Head back to the ```received``` function of our ```room_channel.js``` file and add this:
 ```javascript
 
+    var connectionCount = 0;
+
 // ============ BROADCASTING THE SESSION TO THE RECIPIENT.=====================================================
     if (data['step'] === 'Broadcasting session to the recipient') {
       console.log('Broadcasting the session to the recipient');
