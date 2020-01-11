@@ -134,9 +134,11 @@ to this:
 <% end %>
 
 <%- if devise_mapping.registerable? && controller_name != 'registrations' %>
-  <%= link_to "Sign up", register_path %><br />
+  <%= link_to "Sign up", register_path, data: {turbolinks: false} %><br />
 <% end %>
 ```
+We use ```data: {turbolinks: false}``` on the signup link to disable turbolinks. If we don't do that, we won't be able to upload a picture.
+
 Now you can go to ```/login``` and ```/register``` to get to your login and register pages respectively.
 
 ### III- Adding custom attributes to the users
@@ -1171,7 +1173,7 @@ We also need to stop the stream when the channel is unsubscribed. To do that, ad
 stop_all_streams
 ```
 
-This broadcast is going to be received by the ```received``` function of our ```app/javascript/channels/appearance_channel.js``` file. Inside that function, add this piece of code:
+This broadcast signal is going to be received by the ```received``` function of our ```app/javascript/channels/appearance_channel.js``` file. Inside that function, add this piece of code:
 ```javascript
 //=================== IF THE USER IS ONLINE ============================//////////////
 if (data['state'] === "online") {
@@ -1220,6 +1222,21 @@ Now if you test our feature, you will see that it works perfectly.
 
 
 
+
+
+NOTE: If you deploy the application to heroku, don't forget to add the REDIS_TO_GO addon in your app, the copy the REDISTOGO_URL and save it as an environment variable in your ```local_env.yml```, just below your AWS credentials:
+```yml
+REDISTOGO_URL: 'redis://redistogo:55cea217e43f8912c561f0cc3247ff48@hammerjaw.redistogo.com:11969/'
+```
+Then, add that url to the action cable production settings on your ```config/cable.yml``` file:
+
+```yml
+production:
+  adapter: redis
+  url: <%= ENV["REDISTOGO_URL"] %>
+  channel_prefix: Final_production
+```
+Also, sometimes you may get broken images on heroku. To fix that, go to your ```config/environment/production.rb``` and set t ```config.assets.compile``` to true.
 
 
 
@@ -1336,7 +1353,6 @@ Let's code our modals:
         <%= link_to '', class:"modal-title", id:"stop-session" do %>
           <i class="fas fa-video-slash"></i>
         <% end %>
-        <!--class="modal-title" id="exampleModalLabel"-->
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -1359,6 +1375,7 @@ Let's code our modals:
 </div> 
 ```
 Now that we have our three modals, we need to render them in our `app/views/layouts/application.html.erb` file. Add this code right before the script tags at the bottom of the file.
+
 ###### `app/views/layouts/application.html.erb`
 ```html
 <%= render 'home/partials/modals/receiver_notif_modal' %>
@@ -1432,70 +1449,131 @@ Then, let's go to our `app/assets/stylesheets/home.scss` file and add some style
   }
 }//==================== Modal ============================
 ```
+###### NOTE: 
+David = the sender = the user initiating the call (the one that clicked the camera icon)
+Alex = the recipient = the user receiving the call
 
 
+Now, let's add the opentok gem in our gemfile:
+```ruby
+gem "opentok", "~> 3.1.0"
+```
+Run bundle install.
 
-```css
-//========Avatar upload styles=========//
-    .avatar-wrapper{
-    	position: relative;
-    	height: 100px;
-    	width: 100px;
-    	margin: 50px auto;
-    	border-radius: 50%;
-    	overflow: hidden;
-    	box-shadow: 1px 1px 15px -5px black;
-    	transition: all .3s ease;
-    	&:hover{
-    		transform: scale(1.05);
-    		cursor: pointer;
-    	}
-    	&:hover .profile-pic{
-    		opacity: .5;
-    	}
-    	.profile-pic {
-            height: 100%;
-        	width: 100%;
-        	transition: all .3s ease;
-        	  &:after{
-        		  //font-family: FontAwesome;
-        		  content: "Upload Avatar";
-        		  top: 0px; left: 0;
-        		  width: 100%;
-        		  height: 100%;
-        		  position: absolute;
-        		  font-size: 20px;
-        		  background: #ecf0f1;
-        		  color: #34495e;
-        		  text-align: center;
-        		  padding-top: 15px;
-        	  }
-    	}
-    	.upload-button {
-    		position: absolute;
-    		top: 0; left: 0;
-    		height: 100%;
-    		width: 100%;
-    		.fa-arrow-circle-up{
-    			position: absolute;
-    			font-size: 100px;
-    			top: 0px;
-    			left: 0px;
-    			text-align: center;
-    			opacity: 0;
-    			transition: all .3s ease;
-    			color: #34495e;
-    		}
-    		&:hover .fa-arrow-circle-up{
-    			opacity: .9;
-    		}
-    	}
-    }
-    //========Avatar upload styles=========//
-    
+Next, add the opentok client SDK in your ```application.html.erb``` file, just above your bootstrap script tags:
+```html
+<script src="https://static.opentok.com/v2/js/opentok.min.js"></script>
+```
+Now just like we stored aws credentials, store your opentok credentials by adding them in your ```local_env.yml``` file like this:
+```yml
+TOKBOX_API_KEY: '46438282'
+TOKBOX_SECRET_KEY: 'd30c34fae41b01bbbab32c88b0060bec3dbec319'
 ```
 
+The next thing we need to do is to create a room channel:
+```terminal
+rails g channel room
+```
+Then, go to your ```javascript/channels/room_channel.js``` and add the ```consumer.subscriptions.create("RoomChannel", {``` block in a constant like this:
+```javascript
+const roomSubscriber = consumer.subscriptions.create("RoomChannel", {
+...
+```
+Next, export the ```roomSubscriber``` constant at the bottom of the file:
+```javascript
+export default roomSubscriber
+```
+Import ```roomSubscriber``` in your ```script.js``` by adding this: 
+```javascript
+import roomSubscriber from '../channels/room_channel'
+```
+Now, let's add event listeners to the camera icons. In your ```script.js``` file, add this code:
+```javascript
+// Add an event listener to call buttons
+    var cameraIcons = document.getElementsByClassName('camera-icon');
+    for (let item of cameraIcons) {
+      item.addEventListener('click', (event) => {
+        event.preventDefault();
+        var recipient_id = item.getAttribute("data-id");
+        var recipient_name = item.getAttribute("data-name");
+        console.log(recipient_id);
+        console.log(recipient_name);
+        var recipient_name_modal = document.getElementById('recipient_name_modal');
+        recipient_name_modal.innerHTML = recipient_name;
+        $('#sender-notif-modal').modal('show');
 
+        roomSubscriber.call(recipient_id, recipient_name);
+      })
+    }
+```
+###### ```Explanation```
+When David clicks on Alex's camera icon, the sender modal pops up, filled with Alex's name. Then, we call the ```call``` function of the ```roomSubscriber``` (not yet defined), passing Alex's name and id as arguments.
+
+
+Let's go ahead and create the ```call``` function. In your ```javascript/channels/room_channel.js``` file, add the call function right below the ```received``` function like this:
+```javascript
+...
+
+received(data) {
+  ...
+},
+
+call(recipient_id, recipient_name) {
+    return this.perform('call', {
+      recipient_id: recipient_id,
+      recipient_name: recipient_name
+    });
+}
+```
+In this method, we call the ```call``` method on the our ```app/channels/room_channel.rb``` file (not yet defined). That method is going to be responsible for broadcasting a notification to Alex.
+
+In ```app/channels/room_channel.rb```, add this code below the unsubscribed method:
+```ruby
+def call(data)
+    recipient_id = data['recipient_id']
+    #recipient_name = data['recipient_name']
+    @session = create_session
+    session_id = @session.session_id
+    broadcast_notif_to_recipient(recipient_id, session_id)
+end
+```
+###### ```Explanation```
+We create the session, then we get the session id, then we call ```broadcast_notif_to_recipient```, passing in Alex's id and the session id we just got. ```create_session``` and ```broadcast_notif_to_recipient``` are methods that we need to define. Let's do that:
+###### ``````app/channels/room_channel.rb```
+```ruby
+private
+  
+def broadcast_notif_to_recipient(recipient_id, session_id)
+    ActionCable.server.broadcast(
+      "room_#{recipient_id}",
+      sender_first_name: current_user.name,
+      sender_id: current_user.id,
+      session_id: session_id,
+      step: 'receiving the call'
+    )
+end
+
+def api_key
+    ENV['TOKBOX_API_KEY']
+end
+
+def secret_key
+    ENV['TOKBOX_SECRET_KEY']
+end
+
+def opentok
+    OpenTok::OpenTok.new api_key, secret_key
+end
+
+def create_session
+    opentok.create_session :media_mode => :routed
+end
+
+def create_token(session_id)
+    opentok.generate_token(session_id)
+end
+
+```
 
 <p align="center">
   <img src="https://github.com/fredericscode/rails/blob/master/app/assets/images/Workathome.png">
